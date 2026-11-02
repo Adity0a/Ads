@@ -411,7 +411,7 @@ Prac: Max-Min and Min-Max filter
 
 clc; 
 clear all;  
-img = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg"); 
+img = imread(""); 
 img = double(img); 
 [m, n] = size(img); 
 max_filtered = img; 
@@ -484,7 +484,7 @@ Prac: Closing
 
 clc;
 clear all;
-I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+I = imread("")
 sturctEle = imcreatese('ellipse',4,4);
 dilation = imdilate(I,sturctEle)
 closing = imerode(dilation,sturctEle);
@@ -502,7 +502,7 @@ Prac: Boundary Extraction
 clc;
 clear all;
 
-I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+I = imread("")
 sturctEle = imcreatese('ellipse',40,40);
 erosion = imerode(I,sturctEle);
 boundry = I-erosion
@@ -521,7 +521,7 @@ Prac: Morphological Gradient
 clc;
 clear all;
 
-I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+I = imread("")
 sturctEle = imcreatese('ellipse',4,4);
 dilation = imdilate(I,sturctEle)
 erosion = imerode(I,sturctEle);
@@ -543,7 +543,7 @@ Prac: Top-hat Transformation
 
 clc;
 clear all;
-I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+I = imread("")
 sturctEle = imcreatese('ellipse',30,30);
 erosion = imerode(I,sturctEle);
 opening = imdilate(erosion,sturctEle)
@@ -562,7 +562,7 @@ Prac: Region filling
 
 clc; 
 clear all; 
-S = imread("C:\Users\ADITYA\Downloads\Box.jpg"); 
+S = imread(""); 
 S = rgb2gray(S); 
 BW = im2bw(S, 0.5);
 subplot(1,3,1); imshow(S); xtitle("Original Image"); 
@@ -576,7 +576,7 @@ Prac: open cv morphological operation package
 
 import cv2
 import numpy as numpy
-img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+img=cv2.imread("")
 pixel=img[100,100]
 print(pixel)
 
@@ -584,7 +584,7 @@ print(pixel)
 Prac: Image Propertiess
 
 import cv2
-img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+img=cv2.imread("")
 dimensions=img.shape
 height=img.shape[0]
 width=img.shape[1]
@@ -601,7 +601,7 @@ Prac: convert image to grayscale
 
 import cv2
 import numpy as numpy
-img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+img=cv2.imread("")
 cv2.imshow('image',img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -615,7 +615,7 @@ Prac: Rotate Image
 
 import cv2
 import numpy as np
-img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+img=cv2.imread("")
 cv2.imshow('image',img)
 cv2.destroyAllWindows()
 (h,w)=img.shape[:2]
@@ -633,7 +633,7 @@ Prac: Draw a circle
 
 import cv2
 import numpy as np
-img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+img=cv2.imread("")
 cv2.circle(img,(80,80),55,(0,255,0),-1)
 cv2.imshow('image',img)
 cv2.waitKey(0)
@@ -643,7 +643,7 @@ Prac: Add text to image
 
 import cv2
 import numpy as np
-img=cv2.imread("C:/Users/ADITYA/Downloads/face.png")
+img=cv2.imread("")
 font=cv2.FONT_HERSHEY_SIMPLEX
 cv2.putText(img,'Hello',(100,140),font,5,(255,255,255))
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
@@ -656,7 +656,7 @@ Prac: Draw a ellipse
 import cv2
 import numpy as np
 
-img = cv2.imread("C:/Users/ADITYA/Downloads/face.png")
+img = cv2.imread("")
 cv2.ellipse(img, (250, 150), (330, 80), 5, 0, 360, (0, 0, 255), 15)
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 cv2.resizeWindow('image', 600, 600)
@@ -669,7 +669,7 @@ Prac: Draw a Square
 import cv2
 import numpy as np
 
-img = cv2.imread("C:/Users/ADITYA/Downloads/face.png")
+img = cv2.imread("")
 
 cv2.rectangle(img, (15, 25), (600, 500), (0, 255, 255), 35)
 
@@ -684,7 +684,7 @@ Prac: Edge Detection
 import cv2
 import numpy as np
 
-img = cv2.imread("C:/Users/ADITYA/Downloads/face.png", 1)
+img = cv2.imread("", 1)
 
 if img is None:
     print("Error: Could not open or find the image.")
@@ -708,7 +708,7 @@ Prac: Open Cv Blur (Image Smoothing)
 
 import cv2 
 import numpy as np 
-img = cv2.imread('C:/Users/ADITYA/Downloads/face.png', 1) 
+img = cv2.imread('', 1) 
 if img is None:
     print("Error: Image not found.")
 else:
@@ -727,7 +727,7 @@ import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(
-    "C:/Users/ADITYA/Downloads/ImageProcessing/ImageProcessing/Video/video.mp4"
+    ""
 )
 
 while cap.isOpened():
@@ -770,7 +770,7 @@ import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(
-    'C:/Users/ADITYA/Downloads/ImageProcessing/ImageProcessing/Video/video.mp4'
+    ''
 )
 
 while cap.isOpened():
@@ -799,7 +799,7 @@ import os
 import cv2
 from PIL import Image
 
-PATH = r"C:\Users\A\Downloads\ImageProcessing\ImageProcessing\Video"
+PATH = r""
 VIDEO_NAME = "mygeneratedvideo.avi"
 VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
 
@@ -902,7 +902,7 @@ Prac: pseudo colouring on a grayscale image
 
 clc;
 clear all;
-RGB = imread('C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg');
+RGB = imread('');
 Image = rgb2gray(RGB);
 subplot(1,3,1);
 imshow(RGB);
@@ -922,7 +922,7 @@ Prac: RGB to YCBCR
 
 clc;
 clear all;
-rgb = imread("C:\Users\ADITYA\OneDrive\Desktop\E-    Drive\Aditya.jpg");
+rgb = imread("");
 ycbcr = rgb2ycbcr(rgb);
 subplot(2,3,1);
 imshow(rgb);
@@ -945,7 +945,7 @@ Prac: RGB to HSV
 
 clc;
 clear all;
-rgb = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg");
+rgb = imread("");
 hsv = rgb2hsv(rgb);
 subplot(2,3,1);
 imshow(rgb);
@@ -967,7 +967,7 @@ Prac: Read a color image and segment. It into RGB Planes
 
 clc;
 clear all;
-I = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg")
+I = imread("")
 r = size(I,1);
 c = size(I,2);
 
@@ -994,6 +994,3 @@ title('Green Component');
 subplot(2,2,4);
 imshow(uint8(B));
 title('Blue Component');
-
-
-
