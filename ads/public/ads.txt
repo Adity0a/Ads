@@ -898,15 +898,102 @@ cv2.imshow("image", img)
 cv2.waitKey(0) 
 cv2.destroyAllWindows() 
 
-Prac:
+Prac: pseudo colouring on a grayscale image
+
+clc;
+clear all;
+RGB = imread('C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg');
+Image = rgb2gray(RGB);
+subplot(1,3,1);
+imshow(RGB);
+title('Original RGB Image');
+subplot(1,3,2);
+imshow(Image);
+title('Gray RGB Image');
+subplot(1,3,3);
+imshow(Image, jet(256));
+title('Pseudo Color Image');
+Histogram = imhist(Image);
+figure();
+plot(0:255, Histogram);
 
 
+Prac: RGB to YCBCR
 
-Prac:
+clc;
+clear all;
+rgb = imread("C:\Users\ADITYA\OneDrive\Desktop\E-    Drive\Aditya.jpg");
+ycbcr = rgb2ycbcr(rgb);
+subplot(2,3,1);
+imshow(rgb);
+title('Original RGB Image');
+subplot(2,3,2);
+imshow(ycbcr);
+title('YCBCR Image');
+subplot(2,3,3);
+imshow(ycbcr(:,:,1));
+title('Luminance');
+subplot(2,3,4);
+imshow(ycbcr(:,:,2));
+title('Chrominance Cb');
+subplot(2,3,5);
+imshow(hsv(:,:,3));
+title('Chrominance Cr');
 
 
+Prac: RGB to HSV
 
-Prac:
+clc;
+clear all;
+rgb = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg");
+hsv = rgb2hsv(rgb);
+subplot(2,3,1);
+imshow(rgb);
+title('Original RGB Image');
+subplot(2,3,2);
+imshow(hsv);
+title('HSV Image');
+subplot(2,3,3);
+imshow(hsv(:,:,3));
+title('Intensity Component');
+subplot(2,3,4);
+imshow(hsv(:,:,1));
+title('hue Component');
+subplot(2,3,5);
+imshow(hsv(:,:,2));
+title('Saturation Component');
+
+Prac: Read a color image and segment. It into RGB Planes
+
+clc;
+clear all;
+I = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg")
+r = size(I,1);
+c = size(I,2);
+
+R = zeros(r,c,3);
+G = zeros(r,c,3);
+B = zeros(r,c,3);
+
+R(:,:,1) = I(:,:,1);
+G(:,:,2) = I(:,:,2);
+B(:,:,3) = I(:,:,3);
+
+subplot(2,2,1);
+imshow(I);
+title('Original Image');
+
+subplot(2,2,2);
+imshow(uint8(R));
+title('Red Component');
+
+subplot(2,2,3);
+imshow(uint8(G));
+title('Green Component');
+
+subplot(2,2,4);
+imshow(uint8(B));
+title('Blue Component');
 
 
 
