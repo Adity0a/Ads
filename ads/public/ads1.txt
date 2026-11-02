@@ -1,0 +1,759 @@
+Prac2a: Csv to horus
+
+import pandas as pd
+
+InputFileName="C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2a.csv"
+OutputFileName="C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2a_horus.csv"
+
+InputData = pd.read_csv(InputFileName, encoding="latin-1")
+
+print('Input Data Values =========================================')
+print(InputData)
+print('===========================================================')
+
+# Best practice: use .copy() so you don't modify InputData by reference
+ProcessData = InputData.copy()
+ProcessData.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+ProcessData.rename(columns={'Country': 'CountryName', 'ISO-M49': 'CountryNumber'}, inplace=True)
+ProcessData.set_index('CountryNumber', inplace=True)
+ProcessData.sort_values('CountryName', axis=0, ascending=False, inplace=True)
+
+print('Process Data Values =======================================')
+print(ProcessData)
+print('===========================================================')
+
+OutputData = ProcessData
+OutputData.to_csv(OutputFileName, index=True)
+
+print('CSV to HORUS - Done')
+
+Prac2b: XML to horus 
+
+import pandas as pd
+import xml.etree.ElementTree as ET
+
+def xml2df(xml_data):
+    root = ET.fromstring(xml_data)
+    records = []
+    for child in root:
+        record = {}
+        for x in child:
+            record[x.tag] = x.text
+        records.append(record)
+    return pd.DataFrame(records)
+
+InputFile = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/prac2b.xml"
+OutputFile = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2b.csv"
+
+xml_data = open(InputFile).read()
+data = xml2df(xml_data)
+
+data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+data.rename(columns={'Country': 'CountryName','ISO-M49': 'CountryNumber'}, inplace=True)
+data.set_index('CountryNumber', inplace=True)
+data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
+print(data)
+
+data.to_csv(OutputFile, index=False)
+print("XML to HORUS - Done")
+
+
+Prac2c:JSON to horus
+
+import pandas as pd
+
+input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2c.json"
+output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2c.csv"
+
+data = pd.read_json(input_file, orient='index', encoding='latin-1')
+
+print("Input Data Values\n")
+print(data)
+
+data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+data.rename(columns={'Country': 'CountryName','ISO-M49': 'CountryNumber'}, inplace=True)
+data.set_index('CountryNumber', inplace=True)
+data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
+
+print("=========================================================")
+print("Process Data Values\n")
+print(data)
+data.to_csv(output_file, index=True)
+
+print("JSON to HORUS - Done")
+
+
+Prac2d:Database to horus
+
+import pandas as pd
+import sqlite3 as sq
+
+input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2d.db"
+table = 'Country_Code'
+output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2d.csv"
+
+# Connect and read the database table
+conn = sq.connect(input_file)
+data = pd.read_sql_query('SELECT * FROM ' + table, conn)
+
+print("Input Data Values")
+print(data)
+
+# Process columns
+data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
+data.rename(columns={
+    'Country': 'CountryName',
+    'ISO-M49': 'CountryNumber'
+}, inplace=True)
+
+data.set_index('CountryNumber', inplace=True)
+data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
+
+print("\nProcess Data Values")
+print(data)
+
+# Save result to CSV
+data.to_csv(output_file, index=True)
+conn.close()
+
+print("\nDatabase to HORUS - Done")
+
+
+Prac3a:Fixers Utilities
+
+import string 
+import datetime as dt 
+
+# 1 Removing leading or lagging spaces from a data entry 
+print('1. Removing leading or lagging spaces from a data entry: \n')
+baddata =" Data            Science with too many spaces is bad!!! " 
+print('Raw Data >',baddata,'<') 
+cleandata=baddata.strip() 
+print('Clean Data >',cleandata,'<') 
+
+# 2 Removing nonprintable characters from a data entry 
+print('\n2. Removing nonprintable characters from a data entry:\n') 
+baddata = "Data\x00Science with\x02 funny characters is \x10bad!!!" 
+cleandata = "" 
+for ch in baddata: 
+    if ch in string.printable:   # Indented 4 spaces
+        cleandata = cleandata + ch  # Indented 8 spaces
+
+print("Bad Data :", baddata) 
+print("Clean Data :", cleandata) 
+
+# 3 Reformatting data entry to match specific formatting criteria. 
+# Convert YYYY/MM/DD to DD Month YYYY 
+print('\n3. Reformatting data entry:\n') 
+baddate = dt.date(2019, 10, 31) 
+baddata = baddate.strftime('%Y-%m-%d') 
+gooddata = baddate.strftime('%d %B %Y') 
+print('Bad Data :', baddata) 
+print('Good Data:', gooddata)
+
+Prac3b:Data Binning or bucketing
+
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import norm
+# Generate data
+data = np.random.normal(90, 25, 5000) #(mean, sd, no. of samples)
+# Create histogram
+plt.hist(data, bins=10, density=True)
+# Normal distribution curve
+x = np.linspace(min(data), max(data), 100)
+plt.plot(x, norm.pdf(x, 90, 25))
+plt.xlabel("Example Data")
+plt.ylabel("Probability Density")
+plt.title("Histogram")
+plt.show()
+
+Prac3c:Averaging of Data
+
+import pandas as pd
+data = pd.read_csv(
+"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3c.csv",
+usecols=['Country', 'Place Name', 'Latitude', 'Longitude'],
+encoding='latin-1'
+)
+result = data.groupby(['Country', 'Place Name'])['Latitude'].mean()
+print(result)
+
+Prac3d:Outlier Detection
+
+import pandas as pd
+data = pd.read_csv(
+"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3D.csv",
+usecols=['Place Name', 'Latitude'],
+encoding='latin-1'
+)
+london = data[data['Place Name'] == 'London']
+mean = london['Latitude'].mean()
+std = london['Latitude'].std()
+upper = mean + std
+lower = mean - std
+print("Upper Outliers:")
+print(london[london['Latitude'] > upper])
+print("Lower Outliers:")
+print(london[london['Latitude'] < lower])
+print("Not Outliers:")
+print(london[(london['Latitude'] >= lower) &
+(london['Latitude'] <= upper)])
+
+Prac3e:logging
+
+import pandas as pd
+data = pd.read_csv(
+"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3D.csv",
+usecols=['Place Name', 'Latitude'],
+encoding='latin-1'
+)
+london = data[data['Place Name'] == 'London']
+mean = london['Latitude'].mean()
+std = london['Latitude'].std()
+upper = mean + std
+lower = mean - std
+print("Upper Outliers:")
+print(london[london['Latitude'] > upper])
+print("Lower Outliers:")
+print(london[london['Latitude'] < lower])
+print("Not Outliers:")
+print(london[(london['Latitude'] >= lower) &
+(london['Latitude'] <= upper)])
+
+Prac4a: Program to retrieve different attributes of data
+
+import pandas as pd
+# File path
+file_path = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4a.csv"
+# Read CSV file
+data = pd.read_csv(file_path, encoding="latin-1")
+# Display number of rows and columns
+print("Rows:", data.shape[0])
+print("Columns:", data.shape[1])
+# Display column names
+print("\n### Raw Data ###")
+for column in data.columns:
+    print(column)
+# Fix column names
+print("\n### Fixed Data ###")
+data.columns = data.columns.str.strip()
+data.columns = data.columns.str.replace(" ", ".")
+# Display fixed column names
+for column in data.columns:
+    print(column)
+# Add Row ID
+data.index.name = "RowID"
+# Display first 5 rows
+print("\n### Data with ID ###")
+print(data.head())
+# Save the fixed dataset
+output_file ="C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4a_retrieve.csv"
+data.to_csv(output_file, encoding="latin-1")
+print("\nDone!")
+
+Prac4b1: Designing a Routing Diagram for Vermeulen Company
+
+import pandas as pd
+from math import radians, cos, sin, asin, sqrt
+# Function to calculate distance
+def haversine(lon1, lat1, lon2, lat2):
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    return round(6371 * c, 3) # Distance in km
+# Read the CSV file
+file_path = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_1.csv"
+data = pd.read_csv(
+file_path,
+usecols=["Country", "Place.Name", "Latitude", "Longitude"],
+encoding="latin-1"
+)
+# Remove duplicate records
+data = data.drop_duplicates()
+# Change column name
+data.rename(columns={"Place.Name": "Place_Name"}, inplace=True)
+# Create a common column for cross join
+data["K"] = 1
+# Create all possible combinations of places
+cross_data = pd.merge(data, data, on="K")
+# Remove K column
+cross_data.drop("K", axis=1, inplace=True)
+# Rename columns
+cross_data.rename(columns={
+"Country_x": "Country_from",
+"Country_y": "Country_to",
+"Place_Name_x": "Place_Name_from",
+"Place_Name_y": "Place_Name_to",
+"Latitude_x": "Latitude_from",
+"Latitude_y": "Latitude_to",
+"Longitude_x": "Longitude_from",
+"Longitude_y": "Longitude_to"
+}, inplace=True)
+# Calculate distance
+cross_data["Distance_KM"] = cross_data.apply(
+lambda row: haversine(
+row["Longitude_from"],
+row["Latitude_from"],
+row["Longitude_to"],
+row["Latitude_to"]
+),
+axis=1
+)
+# Convert kilometers to miles
+cross_data["Distance_Miles"] = cross_data["Distance_KM"] * 0.621371
+# Display dimensions
+print("Rows and Columns:", cross_data.shape)
+# Save the result
+output_file ="C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_1_retrieve.csv"
+cross_data.to_csv(output_file, index=False, encoding="latin-1")
+print("Done!")
+
+Prac4b2: Planning a schedule of jobs to be performed for the router network
+
+import pandas as pd
+# Read CSV file
+data = pd.read_csv(
+"C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_2.csv",
+usecols=['Country', 'Place.Name', 'Latitude', 'Longitude'],
+encoding='latin-1'
+)
+# Rename column
+data.rename(columns={'Place.Name': 'Place_Name'}, inplace=True)
+print('Old rows:', len(data))
+# Remove duplicates
+data = data.drop_duplicates()
+print('New rows:', len(data))
+print('Columns:', len(data.columns))
+# Save new CSV file
+data.to_csv(
+"C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_2_Retrieve.csv",
+index=False
+)
+print('Done!!')
+
+Prac4c: Picking Content for Billboards
+
+import os
+import pandas as pd
+
+# Local folder configurations focused on your local workspace
+input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4c.csv"
+output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4c_Retrieve.csv"
+base_folder = "C:/Users/ADITYA/Downloads/Ads_Practical"
+
+# Construct strict file pathway routes
+raw_data_path = os.path.join(base_folder, "00-RawData", input_file)
+output_dir = os.path.join(base_folder, "01-Retrieve")
+final_output_path = os.path.join(output_dir, output_file)
+
+# Safety check: Automatically create the output directory path if missing
+os.makedirs(output_dir, exist_ok=True)
+
+# Read CSV file using standard filters
+data = pd.read_csv(
+    raw_data_path, usecols=["Country", "PlaceName", "Latitude", "Longitude"]
+)
+
+# Rename column
+data.rename(columns={"PlaceName": "Place_Name"}, inplace=True)
+
+# Display old number of rows
+print("Rows from old set:", len(data))
+
+# Remove duplicate rows cleanly
+data = data.drop_duplicates()
+
+# Display new size characteristics
+print("Rows after cleaning:", len(data))
+print("Columns:", len(data.columns))
+
+# Save cleaned data
+data.to_csv(final_output_path, index=False)
+print("\nDone!! Clean file saved.")
+
+
+Prac4d1: Planning the shipping rules for best-fit international logistics
+
+import os
+import pandas as pd
+# Incoterm to search
+term = 'EXW'
+# File names
+input_file = "Prac4d_1.csv"
+output_file = "Prac4d_1_retrieve.csv"
+base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
+company = 'Prac4d_1'
+# Input and output paths
+input_path = base + '/' + company + '/00-RawData/' + input_file
+output_folder = base + '/' + company + '/01-Retrieve'
+# Create output folder
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+# Read CSV
+data = pd.read_csv(input_path)
+# Select only EXW records
+result = data[data['Shipping_Term'] == term]
+# Display result
+print('Rows:', len(result))
+print('Columns:', len(result.columns))
+print(result)
+# Save result
+output_path = output_folder + '/' + output_file
+result.to_csv(output_path, index=False)
+print('Done!!')
+
+Prac4d2: Adopt new shipping containers
+
+import os
+import pandas as pd
+# Folder location
+base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
+company = 'Prac4d_2'
+folder = base + '/' + company + '/01-Retrieve'
+# Create folder if it does not exist
+if not os.path.exists(folder):
+    os.makedirs(folder)
+
+# 1. CREATE CONTAINER DATA
+containers = []
+count = 0
+for length in range(1, 21):
+    for width in range(1, 10):
+        for height in range(1, 6):
+            count = count + 1
+            volume = length * width * height
+            containers.append([
+                'Container',
+                'C' + format(count, '06d'),
+                length,
+                width,
+                height,
+                volume
+            ])
+ContainerFrame = pd.DataFrame(containers, columns=[
+    'ShipType',
+    'UnitNumber',
+    'Length',
+    'Width',
+    'Height',
+    'ContainerVolume'
+])
+print('Container Rows:', len(ContainerFrame))
+print('Container Columns:', len(ContainerFrame.columns))
+ContainerFrame.to_csv(
+    folder + '/Retrieve_Container.csv',
+    index=False
+)
+
+# 2. CREATE BOX DATA
+boxes = []
+count = 0
+for length in range(1, 21):
+    for width in range(1, 21):
+        for height in range(1, 21):
+            for thickness in range(0, 6):
+                box_volume = (length / 10) * (width / 10) * (height / 10)
+                product_volume = (
+                    (length - thickness) / 10 *
+                    (width - thickness) / 10 *
+                    (height - thickness) / 10
+                )
+                if product_volume > 0:
+                    count = count + 1
+                    boxes.append([
+                        'Box',
+                        'B' + format(count, '06d'),
+                        length / 10,
+                        width / 10,
+                        height / 10,
+                        thickness / 5,
+                        round(box_volume, 9),
+                        round(product_volume, 9) 
+                    ])
+BoxFrame = pd.DataFrame(boxes, columns=[
+    'ShipType',
+    'UnitNumber',
+    'Length',
+    'Width',
+    'Height',
+    'Thickness',
+    'BoxVolume',
+    'ProductVolume'
+])
+print('Box Rows:', len(BoxFrame))
+print('Box Columns:', len(BoxFrame.columns))
+BoxFrame.to_csv(
+    folder + '/Retrieve_Box.csv',
+    index=False
+)
+
+# 3. CREATE PRODUCT DATA
+products = []
+count = 0
+for length in range(1, 21):
+    for width in range(1, 21):
+        for height in range(1, 21):
+            volume = (
+                (length / 10) *
+                (width / 10) *
+                (height / 10)
+            )
+            count = count + 1
+            products.append([
+                'Product',
+                'P' + format(count, '06d'),
+                length / 10,
+                width / 10,
+                height / 10,
+                round(volume, 9)
+            ])
+ProductFrame = pd.DataFrame(products, columns=[
+    'ShipType',
+    'UnitNumber',
+    'Length',
+    'Width',
+    'Height',
+    'ProductVolume'
+])
+print('Product Rows:', len(ProductFrame))
+print('Product Columns:', len(ProductFrame.columns))
+ProductFrame.to_csv(
+    folder + '/Retrieve_Product.csv',
+    index=False
+)
+print('Done!!')
+
+
+Prac4d3: Creating a delivery route
+
+import os
+import pandas as pd
+from geopy.distance import geodesic
+
+# File details
+input_file = 'Prac4d_3.csv'
+output_file = 'Prac4d_3_retrieve.csv'
+
+# Updated folder paths matching your computer
+base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
+company = 'Prac4d_3'
+# Input and output paths
+input_path = base + '/' + company + '/00-RawData/' + input_file
+output_folder = base + '/' + company + '/01-Retrieve'
+
+# Create output folder (Indentation Fixed)
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
+
+# Read warehouse data
+warehouse = pd.read_csv(input_path)
+
+# Remove warehouses with latitude or longitude = 0
+warehouse = warehouse[
+    (warehouse['latitude'] != 0) &
+    (warehouse['longitude'] != 0)
+]
+
+# Remove duplicate postcodes
+warehouse = warehouse.drop_duplicates(subset='postcode')
+
+# Sort by postcode
+warehouse = warehouse.sort_values(by='postcode')
+
+# Save cleaned warehouse data
+warehouse.to_csv(output_folder + '/' + output_file, index=False)
+print('Warehouse data saved!')
+
+# Use first 20 warehouses as sellers
+sellers = warehouse.head(20)
+
+# Use first 10,000 warehouses as buyers
+buyers = warehouse.head(10000)
+
+# Create routes for each seller
+for i in range(len(sellers)):
+    seller = sellers.iloc[i]
+    print('Run:', i, '======>', seller['postcode'])
+    
+    # Create a copy of buyer data
+    routes = buyers.copy()
+    
+    # Seller information
+    routes['Transaction'] = 'WH-to-WH'
+    routes['Seller'] = 'WH-' + str(seller['postcode'])
+    routes['Seller_Latitude'] = seller['latitude']
+    routes['Seller_Longitude'] = seller['longitude']
+    
+    # Buyer information
+    routes['Buyer'] = 'WH-' + routes['postcode'].astype(str)
+    routes['Buyer_Latitude'] = routes['latitude']  # Fixed missing bracket here
+    routes['Buyer_Longitude'] = routes['longitude']
+    
+    # Calculate distance using geodesic miles
+    routes['Distance'] = routes.apply(
+        lambda row: round(
+            geodesic(
+                (seller['latitude'], seller['longitude']),
+                (row['latitude'], row['longitude'])
+            ).miles,
+            6
+        ),
+        axis=1
+    )
+    
+    # Drop raw incoming columns to keep output tidy
+    routes = routes.drop(columns=['id', 'postcode', 'latitude', 'longitude'])
+    
+    output_name = 'Retrieve_Route_WH-' + str(seller['postcode']) + '_Route.csv'
+    routes.to_csv(output_folder + '/' + output_name, index=False)
+
+print('Done!!')
+
+
+Prac4e: Person Base Data
+
+import os
+import zipfile
+import shutil
+import pandas as pd
+base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
+zip_files = [
+"Data_female-names",
+"Data_male-names",
+"Data_last-names"
+]
+for name in zip_files:
+    # ZIP and output paths
+    zip_file = base + "/Prac4e/00-RawData/" + name + ".zip"
+    folder = base + "/Prac4e/01-Retrieve/" + name
+    output = base + "/Prac4e/01-Retrieve/Retrieve-" + name + ".csv"
+    # Extract ZIP file
+    with zipfile.ZipFile(zip_file, "r") as z:
+        z.extractall(folder)
+        # Read all CSV files
+        files_data = []
+        for root, folders, files in os.walk(folder):
+            for file in files:
+                if file.endswith(".csv"):
+                    data = pd.read_csv(
+                        os.path.join(root, file),
+                        header=None
+                    )
+                    files_data.append(data)
+# Combine CSV files
+        result = pd.concat(files_data, ignore_index=True)
+# Rename column
+        result.rename(
+            columns={0: "NameValues"},
+            inplace=True
+        )
+        # Save combined data
+        result.to_csv(output, index=False)
+        # Remove extracted files
+        shutil.rmtree(folder)
+        print("Processed:", name)
+print("Done!")
+
+Prac5a: Data=Data.dropna(index=0, how='all')
+
+Prac5b: Data=Data.dropna(index=0, how='any')
+
+Prac5c: keep only the Rows that contain a Maximum of two missing values
+
+import pandas as pd
+
+Inputfile='C:/Users/ADITYA/Downloads/Ads_Practical/Practical5/Prac5c.csv'
+Outpufile='C:/Users/ADITYA/Downloads/Ads_Practical/Practical5/Prac5c_retrieve.csv'
+
+print('Loading..',Inputfile)
+Data=pd.read_csv(Inputfile)
+print('## Raw Data')
+print(Data)
+
+print('\nRows:',Data.shape[0])
+print('Columns:',Data.shape[1])
+
+Data=Data.dropna(thresh=2)
+print('\nCleaned Data')
+print(Data)
+print('\nRows:',Data.shape[0])
+print('Columns:',Data.shape[1]) 
+
+Prac6: Processing Data-Builds the time hub, link and satellite
+
+import pandas as pd
+import sqlite3 as sq
+from datetime import datetime, timedelta
+from pytz import timezone
+# Connect to database
+conn = sq.connect('datavault.db')
+# ---------- TIME HUB ----------
+dates = [datetime(2018, 1, 1) - timedelta(hours=i) for i in range(10)]
+
+Hub = pd.DataFrame({
+'DateTimeKey': [d.strftime('%Y-%m-%d-%H-%M-%S') for d in dates],
+'DateTime': [d.strftime('%Y-%m-%d %H:%M:%S') for d in dates]
+})
+Hub.to_sql('Hub-Time', conn, if_exists='replace', index=False)
+print("TIME HUB")
+print(Hub)
+# ---------- LINK & SATELLITE ----------
+for zone in ['Asia/Kolkata', 'Europe/London', 'America/New_York']:
+    Satellite = Hub.copy()
+    Satellite['LocalTime'] = [
+        d.replace(tzinfo=timezone('UTC')).astimezone(timezone(zone)).strftime('%Y-%m-%d%H:%M:%S')
+for d in dates
+]
+Satellite[['DateTimeKey']].to_sql(
+'Link-' + zone.replace('/', '-'),
+conn, if_exists='replace',
+)
+Satellite.to_sql(
+'Satellite-' + zone.replace('/', '-'),
+conn, if_exists='replace', index=False
+)
+print("\n", zone)
+print(Satellite)
+conn.close()
+print("\nDONE!")
+
+Prac 7 :Transforming Data: To illustrate the consolidation process
+
+import pandas as pd
+import sqlite3
+from datetime import datetime
+from pytz import timezone
+
+db1 = sqlite3.connect("datavault.db")
+db2 = sqlite3.connect("datawarehouse.db")
+
+utc = datetime(2005,4, 14, 10, 15).replace(tzinfo=timezone("UTC"))
+
+zone = "Asia/Kolkata"
+local = utc.astimezone(timezone(zone))
+
+time = pd.DataFrame([{
+"DateTime": utc.strftime("%Y-%m-%d %H:%M:%S"),
+"Zone": zone,
+"LocalTime": local.strftime("%Y-%m-%d %H:%M:%S")
+}])
+
+time.to_sql("Hub-Time", db1, if_exists="replace", index=False)
+time.to_sql("Dim-Time", db2, if_exists="replace", index=False)
+
+person = pd.DataFrame([{
+"Name": "Aaditya Mishra",
+"BirthTime": local.strftime("%Y-%m-%d %H:%M:%S")
+}])
+person.to_sql("Hub-Person", db1, if_exists="replace", index=False)
+person.to_sql("Dim-Person", db2, if_exists="replace", index=False)
+
+print("UTC Time:", utc)
+print("Local Time:", local)
+print("\nConsolidated Data:")
+print(person)
+db1.close()
+db2.close()

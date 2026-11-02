@@ -1,759 +1,912 @@
-Prac2a: Csv to horus
+Prac:Log Transformation
 
-import pandas as pd
-
-InputFileName="C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2a.csv"
-OutputFileName="C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2a_horus.csv"
-
-InputData = pd.read_csv(InputFileName, encoding="latin-1")
-
-print('Input Data Values =========================================')
-print(InputData)
-print('===========================================================')
-
-# Best practice: use .copy() so you don't modify InputData by reference
-ProcessData = InputData.copy()
-ProcessData.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
-ProcessData.rename(columns={'Country': 'CountryName', 'ISO-M49': 'CountryNumber'}, inplace=True)
-ProcessData.set_index('CountryNumber', inplace=True)
-ProcessData.sort_values('CountryName', axis=0, ascending=False, inplace=True)
-
-print('Process Data Values =======================================')
-print(ProcessData)
-print('===========================================================')
-
-OutputData = ProcessData
-OutputData.to_csv(OutputFileName, index=True)
-
-print('CSV to HORUS - Done')
-
-Prac2b: XML to horus 
-
-import pandas as pd
-import xml.etree.ElementTree as ET
-
-def xml2df(xml_data):
-    root = ET.fromstring(xml_data)
-    records = []
-    for child in root:
-        record = {}
-        for x in child:
-            record[x.tag] = x.text
-        records.append(record)
-    return pd.DataFrame(records)
-
-InputFile = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/prac2b.xml"
-OutputFile = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2b.csv"
-
-xml_data = open(InputFile).read()
-data = xml2df(xml_data)
-
-data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
-data.rename(columns={'Country': 'CountryName','ISO-M49': 'CountryNumber'}, inplace=True)
-data.set_index('CountryNumber', inplace=True)
-data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
-print(data)
-
-data.to_csv(OutputFile, index=False)
-print("XML to HORUS - Done")
+clc;
+clear all;
+a=imread("");
+b=double(a);
+subplot(1,2,1);
+imshow(a);
+title('Original Image')
+t=10;
+[m,n]=size(b);
+for i=1:m
+    for j=1:n
+        c(i,j)=t*log(1+b(i,j))
+    end
+end
+subplot(1,2,2);
+imshow(uint8(c));
+title('Log Transform Image')
 
 
-Prac2c:JSON to horus
+Prac:Power law Transformation
 
-import pandas as pd
+clc;
+clear all;
+a=imread("");
+b=double(a);
+subplot(1,2,1);
+imshow(a);
+title('Original Image')
+k=1;
+gamma=1;
+[m,n]=size(b);
+for i=1:m
+    for j=1:n
+        c(i,j)=k*(b(i,j)^gamma);
+    end
+end
+subplot(1,2,2);
+imshow(uint8(c));
+title('Power Law Transformation')
 
-input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2c.json"
-output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2c.csv"
+Prac:Negation
 
-data = pd.read_json(input_file, orient='index', encoding='latin-1')
+clc;
+clear all;
+a=imread("");
+subplot(1,2,1);
+imshow(a)
+title('Original img')
+[m,n] = size(a);
+for i = 1:m
+    for j = 1:n
+        c(i,j) = 255 - a(i,j)
+    end
+end
+subplot(1,2,2);
+imshow(c)
+title('negation img')
 
-print("Input Data Values\n")
-print(data)
+Prac:Contrast Stretching
 
-data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
-data.rename(columns={'Country': 'CountryName','ISO-M49': 'CountryNumber'}, inplace=True)
-data.set_index('CountryNumber', inplace=True)
-data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
+clc;
+clear all; 
+a = imread("");
 
-print("=========================================================")
-print("Process Data Values\n")
-print(data)
-data.to_csv(output_file, index=True)
+if size(a, 3) == 3
+    a = rgb2gray(a);
+end
+b = double(a); subplot(2,3,1); 
+imshow(a); title('Original img');
 
-print("JSON to HORUS - Done")
+f1 = bitget(b, 1); subplot(2,3,2); 
+imshow(f1); title('bit 1 img');
 
+f2 = bitget(b, 2); subplot(2,3,3); 
+imshow(f2); title('bit 2 img');
 
-Prac2d:Database to horus
+f3 = bitget(b, 4); subplot(2,3,4); 	
+imshow(f3); title('bit 4 img');
 
-import pandas as pd
-import sqlite3 as sq
+f4 = bitget(b, 6); subplot(2,3,5); 
+imshow(f4); title('bit 6 img');
 
-input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2d.db"
-table = 'Country_Code'
-output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical2/Prac2d.csv"
-
-# Connect and read the database table
-conn = sq.connect(input_file)
-data = pd.read_sql_query('SELECT * FROM ' + table, conn)
-
-print("Input Data Values")
-print(data)
-
-# Process columns
-data.drop(['ISO-2-CODE', 'ISO-3-Code'], axis=1, inplace=True)
-data.rename(columns={
-    'Country': 'CountryName',
-    'ISO-M49': 'CountryNumber'
-}, inplace=True)
-
-data.set_index('CountryNumber', inplace=True)
-data.sort_values('CountryName', axis=0, ascending=False, inplace=True)
-
-print("\nProcess Data Values")
-print(data)
-
-# Save result to CSV
-data.to_csv(output_file, index=True)
-conn.close()
-
-print("\nDatabase to HORUS - Done")
+f5 = bitget(b, 8); subplot(2,3,6); 
+imshow(f5); title('bit 8 img');
 
 
-Prac3a:Fixers Utilities
+Prac:Gray-level Slicing with and without background
 
-import string 
-import datetime as dt 
+clc;
+clear all;
+a = imread("");
+b=double(a);
+[m,n]=size(b);
+x1=input("Enter x1=");
+x2=input("Enter x2=");
+c=zeros(m,n);
+d=zeros(m,n);
+for i=1:m
+    for j=1:n
+        if(b(i,j)>=x1&&b(i,j)<=x2)
+            c(i,j)=255;
+        else c(i,j)=0;
+        end
+    end
+end
+for i=1:m
+    for j=1:n
+        if(b(i,j)>=x1&&b(i,j)<=x2)
+            d(i,j)=255;
+        else
+            d(i,j)=b(i,j);
+        end
+    end
+end
+subplot(1,3,1);
+imshow(a);
+title('Original Image');
+subplot(1,3,2);
+imshow(uint8(c));
+title('Gray Level Slicing Without Background');
+subplot(1,3,3);
+imshow(uint8(d));
+title('Gray Level Slicing With Background');
 
-# 1 Removing leading or lagging spaces from a data entry 
-print('1. Removing leading or lagging spaces from a data entry: \n')
-baddata =" Data            Science with too many spaces is bad!!! " 
-print('Raw Data >',baddata,'<') 
-cleandata=baddata.strip() 
-print('Clean Data >',cleandata,'<') 
 
-# 2 Removing nonprintable characters from a data entry 
-print('\n2. Removing nonprintable characters from a data entry:\n') 
-baddata = "Data\x00Science with\x02 funny characters is \x10bad!!!" 
-cleandata = "" 
-for ch in baddata: 
-    if ch in string.printable:   # Indented 4 spaces
-        cleandata = cleandata + ch  # Indented 8 spaces
+Prac: Bit-Plane Slicing
 
-print("Bad Data :", baddata) 
-print("Clean Data :", cleandata) 
+clc;
+clear all;
+a = imread("");
+b=double(a);
+[m,n]=size(b);
+x1=input("Enter x1=");
+x2=input("Enter x2=");
+y1=input("Enter y1=");
+y2=input("Enter y2=");
+slope1=y1/x1;
+slope2=(y2-y1)/(x2-x1);
+slope3=(255-y2)/(255-x2);
+intercept1=y1-slope2*x1;
+intercept2=y2-slope3*x2;
+ics=zeros(m,n);
+for i=1:m
+    for j=1:n
+        if(0<b(i,j)&&b(i,j)<x1)
+            ics(i,j)=slope1*b(i,j);
+        elseif(x1<b(i,j)&&b(i,j)<x2)
+            ics(i,j)=slope2*b(i,j)+intercept1;
+        else(x2<b(i,j)&&b(i,j)<255)
+            ics(i,j)=slope3*b(i,j)+intercept2;
+        end
+        end
+end
+subplot(1,2,1);
+imshow(a);
+title('Original Image')
+subplot(1,2,2);
+imshow(uint8(ics));
+title('Contrast Stretching')
 
-# 3 Reformatting data entry to match specific formatting criteria. 
-# Convert YYYY/MM/DD to DD Month YYYY 
-print('\n3. Reformatting data entry:\n') 
-baddate = dt.date(2019, 10, 31) 
-baddata = baddate.strftime('%Y-%m-%d') 
-gooddata = baddate.strftime('%d %B %Y') 
-print('Bad Data :', baddata) 
-print('Good Data:', gooddata)
+Prac:Discrete Fourier Transform
 
-Prac3b:Data Binning or bucketing
+clc;
+clear all;
+S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
+h = mkfftfilter(S,'gauss',0.4);
+S2 = fft2(im2double(S));
+S3 = S2.*fftshift(h);
+S4=real(ifft(S3));
+subplot(2,2,1);
+imshow(S);
+title('Original Image');
+subplot(2,2,2);
+imshow(S2);
+title('Fourier transform');
+subplot(2,2,3);
+imshow(S3);
+title('shifted Fourier transform');
+subplot(2,2,4);
+imshow(S4);
+title('Filtered Image');
 
+Prac: Discrete fourier Transform(DFT)
+
+clc; 
+clear all;  
+I = imread(""); 
+I1 = double(I); 
+J = fft2(I1); 
+L = fftshift(real(J));  
+subplot(1,3,1); 
+imshow(I); 
+title('Original Image');  
+subplot(1,3,2); 
+imshow(J); 
+title('Fourier transform');  
+subplot(1,3,3); 
+imshow(L); 
+title('shifted Fourier transform');
+
+Prac:Gaussian low pass filter
+
+clc; 
+clear all;  
+S = imread(""); 
+S = rgb2gray(S); 
+S2 = fft2(im2double(S)); 
+S3 = fftshift(S2);  
+[M,N] = size(S); 
+[u,v] = meshgrid(1:N,1:M); 
+D = sqrt((u-N/2).^2 + (v-M/2).^2); 
+D0 = 30;  
+H = exp(-(D.^2)/(2*D0^2)); 
+S4 = real(ifft2(ifftshift(S3.*H)));  
+subplot(1,3,1); imshow(S); 
+title('Original Image');  
+subplot(1,3,2); 
+imshow(log(1+abs(S3)),[]); 
+title('Fourier Transform');  
+subplot(1,3,3); 
+imshow(S4,[]); 
+title('Gaussian Low Pass Filter'); 
+
+Prac:Butterworth low pass filter
+
+clc;
+clear all;
+S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
+h = mkfftfilter(S,'butterworth1',0.4);
+S2 = fft2(im2double(S));
+S3 = S2.*fftshift(h);
+S4=real(ifft(S3));
+subplot(2,2,1);
+imshow(S);
+title('Original Image');
+subplot(2,2,2);
+imshow(S2);
+title('Fourier transform');
+subplot(2,2,3);
+imshow(S3);
+title('shifted Fourier transform');
+subplot(2,2,4);
+imshow(S4);
+title('Filtered Image');
+
+Prac:ideal high pass filter
+
+clc;
+clear all;
+S = imread(fullpath(getIPCVpath()+"\images\mea
+sure_gray.jpg"));
+S2 = fft2(im2double(S));
+h=ffilt('hp',3,0.2,0.3);
+img=imfilter(S2,h);
+S4=real(ifft(img));
+subplot(1,3,1);
+imshow(S);
+title('Original Image');
+subplot(1,3,2);
+imshow(S2);
+title('Fourier Image');
+subplot(1,3,3);
+imshow(S4);
+title('Filtered Image');
+
+Prac:ideal low pass filter
+
+clc;
+clear all;
+S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
+S2 = fft2(im2double(S));
+h=ffilt('lp',3,0.2,0.3);
+img=imfilter(S2,h);
+S4=real(ifft(img));
+subplot(1,3,1);
+imshow(S);
+title('Original Image');
+subplot(1,3,2);
+imshow(S2);
+title('Fourier Image');
+subplot(1,3,3);
+imshow(S4);
+title('Filtered Image');
+
+Prac:Image Averaging for Noise Removal Using Averaging filter
+
+Image=imread("");
+NoisyImage=imnoise(Image,'salt & pepper', 0.02);
+F1=fspecial('average',3);
+FilterImage=imfilter(NoisyImage,F1);
+subplot(1,3,1);
+imshow(Image);
+title('Original Image');
+subplot(1,3,2);
+imshow(NoisyImage);
+title('Noisy Image');
+subplot(1,3,3);
+imshow(FilterImage);
+title('Filtered Image');
+
+Prac:Smoothing
+
+Image=imread("");
+NoisyImage=imnoise(Image,'gaussian', 0.02);
+F1=fspecial('average',3);
+wienerImage=imwiener2(NoisyImage,[5,5],0.02);
+subplot(1,3,1);
+imshow(Image);
+title('Original Image');
+subplot(1,3,2);
+imshow(NoisyImage);
+title('Noisy Image');
+subplot(1,3,3);
+imshow(wienerImage);
+title('Wiener Filter');
+
+Prac:Varying the number of Intensity levels in a Digital image
+
+clc; 
+clear all; 
+a = imread(""); 
+a = double(rgb2gray(a)); 
+subplot(2,2,1); 
+imshow(uint8(a)); xtitle("Original Image"); 
+subplot(2,2,2); 
+imshow(uint8(floor(a/128)*128)); xtitle("2 Intensity Levels"); 
+subplot(2,2,3); 
+imshow(uint8(floor(a/64)*64)); 
+xtitle("4 Intensity Levels"); 
+subplot(2,2,4); 
+imshow(uint8(floor(a/32)*32)); xtitle("8 Intensity Levels");
+
+Prac: Program to perform image averaging(image addition) for noise reduction
+
+clc; 
+clear all; 
+a = double(imread("")); 
+b = double(imread("")); 
+avg = uint8((a+b)/2); 
+subplot(1,3,1); 
+imshow(uint8(a)); 
+xtitle("Image 1"); 
+subplot(1,3,2); 
+imshow(uint8(b)); 
+xtitle("Image 2"); 
+subplot(1,3,3); 
+imshow(avg); 
+xtitle("Averaged Image");
+
+Prac: Program to compare images using subtraction for enhancing the difference between images
+
+clc; 
+clear all; 
+a = double(imread("")); 
+b = double(imread("")); 
+sub = uint8((a-b)); 
+subplot(1,3,1); 
+imshow(uint8(a)); 
+xtitle("Image 1"); 
+subplot(1,3,2); 
+imshow(uint8(b)); 
+xtitle("Image 2"); 
+subplot(1,3,3); 
+imshow(sub); 
+xtitle("Subtracted Image");
+
+Prac: Mean
+
+clc; 
+clear all; 
+
+img = imread("");
+img = double(img); [m, n] = size(img); 
+filtered = zeros(m, n); 
+for i = 2:m-1   
+    for j = 2:n-1       
+        window = img(i-1:i+1, j-1:j+1);       
+        filtered(i,j) = sum(window) / 9;   
+    end 
+end 
+filtered = uint8(filtered); 
+figure(); subplot(1,2,1); imshow(uint8(img)); 
+title("Original Image"); 
+subplot(1,2,2); imshow(filtered); 
+title("Mean Filtered Image");
+
+Prac: median
+
+clc; 
+clear all;  
+img = imread(""); 
+img = double(img);  
+[m, n] = size(img); 
+filtered = img;  
+for i = 2:m-1   
+    for j = 2:n-1      
+        window = img(i-1:i+1, j-1:j+1);      
+        pixels = matrix(window, 1, 9);      
+        filtered(i,j) = median(pixels);   
+    end 
+end  
+filtered = uint8(filtered); 
+figure(); subplot(1,2,1); imshow(uint8(img)); 
+title("Original Image"); 
+subplot(1,2,2); imshow(filtered); 
+title("Median Filtered Image");
+
+Prac: Max-Min and Min-Max filter
+
+clc; 
+clear all;  
+img = imread("C:\Users\ADITYA\OneDrive\Desktop\E-Drive\Aditya.jpg"); 
+img = double(img); 
+[m, n] = size(img); 
+max_filtered = img; 
+min_filtered = img; 
+maxmin_filtered = img; 
+for i = 2:m-1   
+    for j = 2:n-1       
+        window = img(i-1:i+1, j-1:j+1);
+        max_filtered(i,j) = max(window);       
+        min_filtered(i,j) = min(window); 
+      maxmin_filtered(i,j) = (max(window) + min(window)) / 2;   
+  end 
+end 
+max_filtered = uint8(max_filtered); 
+min_filtered = uint8(min_filtered); 
+maxmin_filtered = uint8(maxmin_filtered); 
+figure(); 
+subplot(2,2,1); 
+imshow(uint8(img)); 
+title("Original Image");  
+subplot(2,2,2); 
+imshow(max_filtered); 
+title("Max Filter");
+
+Prac: Erosion
+
+clc;
+clear all;
+I = imread("")
+sturctEle = imcreatese('ellipse',5,5);
+erosion = imerode(I,sturctEle);
+subplot(1,2,1);
+imshow(I);
+title('Original Image');
+subplot(1,2,2);
+imshow(erosion);
+title('Eroded Image');
+
+Prac: Dilation
+
+clc;
+clear all;
+I = imread("")
+sturctEle = imcreatese('ellipse',7,7);
+erosion = imdilate(I,sturctEle);
+subplot(1,2,1);
+imshow(I);
+title('Original Image');
+subplot(1,2,2);
+imshow(erosion);
+title('Dilate Image');
+
+Prac: Opening
+
+clc;
+clear all;
+I = imread("")
+sturctEle = imcreatese('ellipse',50,50);
+erosion = imerode(I,sturctEle)
+opening = imdilate(erosion,sturctEle);
+subplot(1,2,1);
+imshow(I);
+title('Original Image');
+subplot(1,2,2);
+imshow(opening);
+title('Opening Image');
+
+
+Prac: Closing
+
+clc;
+clear all;
+I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+sturctEle = imcreatese('ellipse',4,4);
+dilation = imdilate(I,sturctEle)
+closing = imerode(dilation,sturctEle);
+
+subplot(1,2,1);
+imshow(I);
+title('Original Image');
+
+subplot(1,2,2);
+imshow(closing);
+title('Closing Image');
+
+Prac: Boundary Extraction
+
+clc;
+clear all;
+
+I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+sturctEle = imcreatese('ellipse',40,40);
+erosion = imerode(I,sturctEle);
+boundry = I-erosion
+subplot(2,2,1);
+imshow(I);
+title('Original Image');
+subplot(2,2,2);
+imshow(erosion);
+title('Opening Image');
+subplot(2,2,3);
+imshow(boundry);
+title('Boundary Image');
+
+Prac: Morphological Gradient
+
+clc;
+clear all;
+
+I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+sturctEle = imcreatese('ellipse',4,4);
+dilation = imdilate(I,sturctEle)
+erosion = imerode(I,sturctEle);
+gradient = dilation-erosion
+subplot(2,2,1);
+imshow(I);
+title('Original Image');
+subplot(2,2,2);
+imshow(dilation);
+title('dilated Image');
+subplot(2,2,3);
+imshow(erosion);
+title('erosion Image');
+subplot(2,2,4);
+imshow(gradient);
+title('Morphological Gradient');
+
+Prac: Top-hat Transformation
+
+clc;
+clear all;
+I = imread("C:\Users\ADITYA\Downloads\Box.jpg")
+sturctEle = imcreatese('ellipse',30,30);
+erosion = imerode(I,sturctEle);
+opening = imdilate(erosion,sturctEle)
+tophat = I-opening
+subplot(2,2,1);
+imshow(I);
+title('Original Image');
+subplot(2,2,2);
+imshow(opening);
+title('opening Image');
+subplot(2,2,3);
+imshow(tophat);
+title('tophat Image');
+
+Prac: Region filling
+
+clc; 
+clear all; 
+S = imread("C:\Users\ADITYA\Downloads\Box.jpg"); 
+S = rgb2gray(S); 
+BW = im2bw(S, 0.5);
+subplot(1,3,1); imshow(S); xtitle("Original Image"); 
+subplot(1,3,2); imshow(BW); xtitle("Binary Image"); 
+[L, num] = imlabel(~BW);
+Filled = (L == 0);
+subplot(1,3,3); imshow(Filled); xtitle("Region Filled Image");
+
+Prac: open cv morphological operation package
+#Access pixel value
+
+import cv2
+import numpy as numpy
+img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+pixel=img[100,100]
+print(pixel)
+
+
+Prac: Image Propertiess
+
+import cv2
+img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+dimensions=img.shape
+height=img.shape[0]
+width=img.shape[1]
+channels=img.shape[2]
+size1=img.size
+
+print('Image Dimension: ',dimensions)
+print('Image Height: ',height)
+print('Image Widht: ',width)
+print('Number of Channels: ',channels)
+print('Image Size: ',size1)
+
+Prac: convert image to grayscale
+
+import cv2
+import numpy as numpy
+img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+cv2.imshow('image',img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+cv2.imshow('Gray Image',gray)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+Prac: Rotate Image
+
+import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm
-# Generate data
-data = np.random.normal(90, 25, 5000) #(mean, sd, no. of samples)
-# Create histogram
-plt.hist(data, bins=10, density=True)
-# Normal distribution curve
-x = np.linspace(min(data), max(data), 100)
-plt.plot(x, norm.pdf(x, 90, 25))
-plt.xlabel("Example Data")
-plt.ylabel("Probability Density")
-plt.title("Histogram")
-plt.show()
+img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+cv2.imshow('image',img)
+cv2.destroyAllWindows()
+(h,w)=img.shape[:2]
+center=(w/2,h/2)
+angle90=90
+scale=1.0
 
-Prac3c:Averaging of Data
+M=cv2.getRotationMatrix2D(center, angle90, scale)
+rotate90=cv2.warpAffine(img,M,(h,w))
+cv2.imshow('image rotated by 90 degrees',rotate90)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-import pandas as pd
-data = pd.read_csv(
-"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3c.csv",
-usecols=['Country', 'Place Name', 'Latitude', 'Longitude'],
-encoding='latin-1'
-)
-result = data.groupby(['Country', 'Place Name'])['Latitude'].mean()
-print(result)
+Prac: Draw a circle
 
-Prac3d:Outlier Detection
+import cv2
+import numpy as np
+img=cv2.imread("C:/Users/ADITYA/OneDrive/Desktop/E-Drive/Aditya.jpg")
+cv2.circle(img,(80,80),55,(0,255,0),-1)
+cv2.imshow('image',img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-import pandas as pd
-data = pd.read_csv(
-"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3D.csv",
-usecols=['Place Name', 'Latitude'],
-encoding='latin-1'
-)
-london = data[data['Place Name'] == 'London']
-mean = london['Latitude'].mean()
-std = london['Latitude'].std()
-upper = mean + std
-lower = mean - std
-print("Upper Outliers:")
-print(london[london['Latitude'] > upper])
-print("Lower Outliers:")
-print(london[london['Latitude'] < lower])
-print("Not Outliers:")
-print(london[(london['Latitude'] >= lower) &
-(london['Latitude'] <= upper)])
+Prac: Add text to image
 
-Prac3e:logging
+import cv2
+import numpy as np
+img=cv2.imread("C:/Users/ADITYA/Downloads/face.png")
+font=cv2.FONT_HERSHEY_SIMPLEX
+cv2.putText(img,'Hello',(100,140),font,5,(255,255,255))
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.imshow('image',img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-import pandas as pd
-data = pd.read_csv(
-"C:/Users/ADITYA/Downloads/Ads_Practical/Practical3/Prac3D.csv",
-usecols=['Place Name', 'Latitude'],
-encoding='latin-1'
-)
-london = data[data['Place Name'] == 'London']
-mean = london['Latitude'].mean()
-std = london['Latitude'].std()
-upper = mean + std
-lower = mean - std
-print("Upper Outliers:")
-print(london[london['Latitude'] > upper])
-print("Lower Outliers:")
-print(london[london['Latitude'] < lower])
-print("Not Outliers:")
-print(london[(london['Latitude'] >= lower) &
-(london['Latitude'] <= upper)])
+Prac: Draw a ellipse
 
-Prac4a: Program to retrieve different attributes of data
+import cv2
+import numpy as np
 
-import pandas as pd
-# File path
-file_path = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4a.csv"
-# Read CSV file
-data = pd.read_csv(file_path, encoding="latin-1")
-# Display number of rows and columns
-print("Rows:", data.shape[0])
-print("Columns:", data.shape[1])
-# Display column names
-print("\n### Raw Data ###")
-for column in data.columns:
-    print(column)
-# Fix column names
-print("\n### Fixed Data ###")
-data.columns = data.columns.str.strip()
-data.columns = data.columns.str.replace(" ", ".")
-# Display fixed column names
-for column in data.columns:
-    print(column)
-# Add Row ID
-data.index.name = "RowID"
-# Display first 5 rows
-print("\n### Data with ID ###")
-print(data.head())
-# Save the fixed dataset
-output_file ="C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4a_retrieve.csv"
-data.to_csv(output_file, encoding="latin-1")
-print("\nDone!")
+img = cv2.imread("C:/Users/ADITYA/Downloads/face.png")
+cv2.ellipse(img, (250, 150), (330, 80), 5, 0, 360, (0, 0, 255), 15)
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image', 600, 600)
+cv2.imshow('image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-Prac4b1: Designing a Routing Diagram for Vermeulen Company
+Prac: Draw a Square
 
-import pandas as pd
-from math import radians, cos, sin, asin, sqrt
-# Function to calculate distance
-def haversine(lon1, lat1, lon2, lat2):
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * asin(sqrt(a))
-    return round(6371 * c, 3) # Distance in km
-# Read the CSV file
-file_path = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_1.csv"
-data = pd.read_csv(
-file_path,
-usecols=["Country", "Place.Name", "Latitude", "Longitude"],
-encoding="latin-1"
-)
-# Remove duplicate records
-data = data.drop_duplicates()
-# Change column name
-data.rename(columns={"Place.Name": "Place_Name"}, inplace=True)
-# Create a common column for cross join
-data["K"] = 1
-# Create all possible combinations of places
-cross_data = pd.merge(data, data, on="K")
-# Remove K column
-cross_data.drop("K", axis=1, inplace=True)
-# Rename columns
-cross_data.rename(columns={
-"Country_x": "Country_from",
-"Country_y": "Country_to",
-"Place_Name_x": "Place_Name_from",
-"Place_Name_y": "Place_Name_to",
-"Latitude_x": "Latitude_from",
-"Latitude_y": "Latitude_to",
-"Longitude_x": "Longitude_from",
-"Longitude_y": "Longitude_to"
-}, inplace=True)
-# Calculate distance
-cross_data["Distance_KM"] = cross_data.apply(
-lambda row: haversine(
-row["Longitude_from"],
-row["Latitude_from"],
-row["Longitude_to"],
-row["Latitude_to"]
-),
-axis=1
-)
-# Convert kilometers to miles
-cross_data["Distance_Miles"] = cross_data["Distance_KM"] * 0.621371
-# Display dimensions
-print("Rows and Columns:", cross_data.shape)
-# Save the result
-output_file ="C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_1_retrieve.csv"
-cross_data.to_csv(output_file, index=False, encoding="latin-1")
-print("Done!")
+import cv2
+import numpy as np
 
-Prac4b2: Planning a schedule of jobs to be performed for the router network
+img = cv2.imread("C:/Users/ADITYA/Downloads/face.png")
 
-import pandas as pd
-# Read CSV file
-data = pd.read_csv(
-"C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_2.csv",
-usecols=['Country', 'Place.Name', 'Latitude', 'Longitude'],
-encoding='latin-1'
-)
-# Rename column
-data.rename(columns={'Place.Name': 'Place_Name'}, inplace=True)
-print('Old rows:', len(data))
-# Remove duplicates
-data = data.drop_duplicates()
-print('New rows:', len(data))
-print('Columns:', len(data.columns))
-# Save new CSV file
-data.to_csv(
-"C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4b_2_Retrieve.csv",
-index=False
-)
-print('Done!!')
+cv2.rectangle(img, (15, 25), (600, 500), (0, 255, 255), 35)
 
-Prac4c: Picking Content for Billboards
+cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('image', 600, 600)
+cv2.imshow('image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-import os
-import pandas as pd
+Prac: Edge Detection
 
-# Local folder configurations focused on your local workspace
-input_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4c.csv"
-output_file = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/Prac4c_Retrieve.csv"
-base_folder = "C:/Users/ADITYA/Downloads/Ads_Practical"
+import cv2
+import numpy as np
 
-# Construct strict file pathway routes
-raw_data_path = os.path.join(base_folder, "00-RawData", input_file)
-output_dir = os.path.join(base_folder, "01-Retrieve")
-final_output_path = os.path.join(output_dir, output_file)
+img = cv2.imread("C:/Users/ADITYA/Downloads/face.png", 1)
 
-# Safety check: Automatically create the output directory path if missing
-os.makedirs(output_dir, exist_ok=True)
+if img is None:
+    print("Error: Could not open or find the image.")
+else:
+    cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("image", 800, 600)  # Set a manageable window size
+    cv2.imshow("image", img)
 
-# Read CSV file using standard filters
-data = pd.read_csv(
-    raw_data_path, usecols=["Country", "PlaceName", "Latitude", "Longitude"]
+    edges = cv2.Canny(img, 100, 200)
+
+    cv2.namedWindow("Edge Detected Image", cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(
+        "Edge Detected Image", 800, 600
+    )  # Set a manageable window size
+    cv2.imshow("Edge Detected Image", edges)
+
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+Prac: Open Cv Blur (Image Smoothing)
+
+import cv2 
+import numpy as np 
+img = cv2.imread('C:/Users/ADITYA/Downloads/face.png', 1) 
+if img is None:
+    print("Error: Image not found.")
+else:
+    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('image', 600, 600)
+    cv2.imshow('image', cv2.blur(img, (5, 5))) 
+
+    cv2.waitKey(0) 
+    cv2.destroyAllWindows()
+
+
+
+Prac: Apply Gaussian Blur to video
+
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture(
+    "C:/Users/ADITYA/Downloads/ImageProcessing/ImageProcessing/Video/video.mp4"
 )
 
-# Rename column
-data.rename(columns={"PlaceName": "Place_Name"}, inplace=True)
+while cap.isOpened():
+    ret, frame = cap.read()
 
-# Display old number of rows
-print("Rows from old set:", len(data))
+    # If the video ends or cannot be read, break out of the loop safely
+    if not ret:
+        break
 
-# Remove duplicate rows cleanly
-data = data.drop_duplicates()
-
-# Display new size characteristics
-print("Rows after cleaning:", len(data))
-print("Columns:", len(data.columns))
-
-# Save cleaned data
-data.to_csv(final_output_path, index=False)
-print("\nDone!! Clean file saved.")
-
-
-Prac4d1: Planning the shipping rules for best-fit international logistics
-
-import os
-import pandas as pd
-# Incoterm to search
-term = 'EXW'
-# File names
-input_file = "Prac4d_1.csv"
-output_file = "Prac4d_1_retrieve.csv"
-base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
-company = 'Prac4d_1'
-# Input and output paths
-input_path = base + '/' + company + '/00-RawData/' + input_file
-output_folder = base + '/' + company + '/01-Retrieve'
-# Create output folder
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
-# Read CSV
-data = pd.read_csv(input_path)
-# Select only EXW records
-result = data[data['Shipping_Term'] == term]
-# Display result
-print('Rows:', len(result))
-print('Columns:', len(result.columns))
-print(result)
-# Save result
-output_path = output_folder + '/' + output_file
-result.to_csv(output_path, index=False)
-print('Done!!')
-
-Prac4d2: Adopt new shipping containers
-
-import os
-import pandas as pd
-# Folder location
-base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
-company = 'Prac4d_2'
-folder = base + '/' + company + '/01-Retrieve'
-# Create folder if it does not exist
-if not os.path.exists(folder):
-    os.makedirs(folder)
-
-# 1. CREATE CONTAINER DATA
-containers = []
-count = 0
-for length in range(1, 21):
-    for width in range(1, 10):
-        for height in range(1, 6):
-            count = count + 1
-            volume = length * width * height
-            containers.append([
-                'Container',
-                'C' + format(count, '06d'),
-                length,
-                width,
-                height,
-                volume
-            ])
-ContainerFrame = pd.DataFrame(containers, columns=[
-    'ShipType',
-    'UnitNumber',
-    'Length',
-    'Width',
-    'Height',
-    'ContainerVolume'
-])
-print('Container Rows:', len(ContainerFrame))
-print('Container Columns:', len(ContainerFrame.columns))
-ContainerFrame.to_csv(
-    folder + '/Retrieve_Container.csv',
-    index=False
-)
-
-# 2. CREATE BOX DATA
-boxes = []
-count = 0
-for length in range(1, 21):
-    for width in range(1, 21):
-        for height in range(1, 21):
-            for thickness in range(0, 6):
-                box_volume = (length / 10) * (width / 10) * (height / 10)
-                product_volume = (
-                    (length - thickness) / 10 *
-                    (width - thickness) / 10 *
-                    (height - thickness) / 10
-                )
-                if product_volume > 0:
-                    count = count + 1
-                    boxes.append([
-                        'Box',
-                        'B' + format(count, '06d'),
-                        length / 10,
-                        width / 10,
-                        height / 10,
-                        thickness / 5,
-                        round(box_volume, 9),
-                        round(product_volume, 9) 
-                    ])
-BoxFrame = pd.DataFrame(boxes, columns=[
-    'ShipType',
-    'UnitNumber',
-    'Length',
-    'Width',
-    'Height',
-    'Thickness',
-    'BoxVolume',
-    'ProductVolume'
-])
-print('Box Rows:', len(BoxFrame))
-print('Box Columns:', len(BoxFrame.columns))
-BoxFrame.to_csv(
-    folder + '/Retrieve_Box.csv',
-    index=False
-)
-
-# 3. CREATE PRODUCT DATA
-products = []
-count = 0
-for length in range(1, 21):
-    for width in range(1, 21):
-        for height in range(1, 21):
-            volume = (
-                (length / 10) *
-                (width / 10) *
-                (height / 10)
-            )
-            count = count + 1
-            products.append([
-                'Product',
-                'P' + format(count, '06d'),
-                length / 10,
-                width / 10,
-                height / 10,
-                round(volume, 9)
-            ])
-ProductFrame = pd.DataFrame(products, columns=[
-    'ShipType',
-    'UnitNumber',
-    'Length',
-    'Width',
-    'Height',
-    'ProductVolume'
-])
-print('Product Rows:', len(ProductFrame))
-print('Product Columns:', len(ProductFrame.columns))
-ProductFrame.to_csv(
-    folder + '/Retrieve_Product.csv',
-    index=False
-)
-print('Done!!')
-
-
-Prac4d3: Creating a delivery route
-
-import os
-import pandas as pd
-from geopy.distance import geodesic
-
-# File details
-input_file = 'Prac4d_3.csv'
-output_file = 'Prac4d_3_retrieve.csv'
-
-# Updated folder paths matching your computer
-base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
-company = 'Prac4d_3'
-# Input and output paths
-input_path = base + '/' + company + '/00-RawData/' + input_file
-output_folder = base + '/' + company + '/01-Retrieve'
-
-# Create output folder (Indentation Fixed)
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
-
-# Read warehouse data
-warehouse = pd.read_csv(input_path)
-
-# Remove warehouses with latitude or longitude = 0
-warehouse = warehouse[
-    (warehouse['latitude'] != 0) &
-    (warehouse['longitude'] != 0)
-]
-
-# Remove duplicate postcodes
-warehouse = warehouse.drop_duplicates(subset='postcode')
-
-# Sort by postcode
-warehouse = warehouse.sort_values(by='postcode')
-
-# Save cleaned warehouse data
-warehouse.to_csv(output_folder + '/' + output_file, index=False)
-print('Warehouse data saved!')
-
-# Use first 20 warehouses as sellers
-sellers = warehouse.head(20)
-
-# Use first 10,000 warehouses as buyers
-buyers = warehouse.head(10000)
-
-# Create routes for each seller
-for i in range(len(sellers)):
-    seller = sellers.iloc[i]
-    print('Run:', i, '======>', seller['postcode'])
-    
-    # Create a copy of buyer data
-    routes = buyers.copy()
-    
-    # Seller information
-    routes['Transaction'] = 'WH-to-WH'
-    routes['Seller'] = 'WH-' + str(seller['postcode'])
-    routes['Seller_Latitude'] = seller['latitude']
-    routes['Seller_Longitude'] = seller['longitude']
-    
-    # Buyer information
-    routes['Buyer'] = 'WH-' + routes['postcode'].astype(str)
-    routes['Buyer_Latitude'] = routes['latitude']  # Fixed missing bracket here
-    routes['Buyer_Longitude'] = routes['longitude']
-    
-    # Calculate distance using geodesic miles
-    routes['Distance'] = routes.apply(
-        lambda row: round(
-            geodesic(
-                (seller['latitude'], seller['longitude']),
-                (row['latitude'], row['longitude'])
-            ).miles,
-            6
-        ),
-        axis=1
+    frame = cv2.resize(
+        frame, (540, 380), fx=0, fy=0, interpolation=cv2.INTER_CUBIC
     )
-    
-    # Drop raw incoming columns to keep output tidy
-    routes = routes.drop(columns=['id', 'postcode', 'latitude', 'longitude'])
-    
-    output_name = 'Retrieve_Route_WH-' + str(seller['postcode']) + '_Route.csv'
-    routes.to_csv(output_folder + '/' + output_name, index=False)
+    cv2.imshow("Frame", frame)
 
-print('Done!!')
+    gaussianblur = cv2.GaussianBlur(frame, (5, 5), 0)
+    cv2.imshow("gblur", gaussianblur)
 
+    # Moved inside the loop with correct 4-space indentation
+    if cv2.waitKey(25) & 0xFF == ord("q"):
+        break
 
-Prac4e: Person Base Data
+cap.release()
+cv2.destroyAllWindows()
+
+Prac: Video Frame Capture and display video using OpenCv
+
+import cv2
+video=cv2.VideoCapture(0)
+while(True):
+    ret,frame=video.read()
+    cv2.imshow('frame',frame)
+    if cv2.waitKey(1)&0xFF==ord('q'):
+        break
+video.release()
+cv2.destroyAllWindows()
+
+Prac: Apply thresholding to intensity
+
+import cv2
+import numpy as np
+
+cap = cv2.VideoCapture(
+    'C:/Users/ADITYA/Downloads/ImageProcessing/ImageProcessing/Video/video.mp4'
+)
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        break
+        
+    frame = cv2.resize(frame, (540, 380), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
+    cv2.imshow("Frame", frame)
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    Thresh = cv2.adaptiveThreshold(
+        gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2
+    )
+    cv2.imshow("Thresh", Thresh)
+
+    if cv2.waitKey(25) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+Prac: resize image to a comman size and generate a video from them
 
 import os
-import zipfile
-import shutil
-import pandas as pd
-base = "C:/Users/ADITYA/Downloads/Ads_Practical/Practical4/"
-zip_files = [
-"Data_female-names",
-"Data_male-names",
-"Data_last-names"
-]
-for name in zip_files:
-    # ZIP and output paths
-    zip_file = base + "/Prac4e/00-RawData/" + name + ".zip"
-    folder = base + "/Prac4e/01-Retrieve/" + name
-    output = base + "/Prac4e/01-Retrieve/Retrieve-" + name + ".csv"
-    # Extract ZIP file
-    with zipfile.ZipFile(zip_file, "r") as z:
-        z.extractall(folder)
-        # Read all CSV files
-        files_data = []
-        for root, folders, files in os.walk(folder):
-            for file in files:
-                if file.endswith(".csv"):
-                    data = pd.read_csv(
-                        os.path.join(root, file),
-                        header=None
-                    )
-                    files_data.append(data)
-# Combine CSV files
-        result = pd.concat(files_data, ignore_index=True)
-# Rename column
-        result.rename(
-            columns={0: "NameValues"},
-            inplace=True
-        )
-        # Save combined data
-        result.to_csv(output, index=False)
-        # Remove extracted files
-        shutil.rmtree(folder)
-        print("Processed:", name)
-print("Done!")
+import cv2
+from PIL import Image
 
-Prac5a: Data=Data.dropna(index=0, how='all')
+PATH = r"C:\Users\A\Downloads\ImageProcessing\ImageProcessing\Video"
+VIDEO_NAME = "mygeneratedvideo.avi"
+VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
 
-Prac5b: Data=Data.dropna(index=0, how='any')
 
-Prac5c: keep only the Rows that contain a Maximum of two missing values
+def resize_images_to_mean(folder_path):
+    """Calculates the average dimensions of valid images in a folder
 
-import pandas as pd
+    and resizes all of them to that mean size.
+    """
+    os.chdir(folder_path)
 
-Inputfile='C:/Users/ADITYA/Downloads/Ads_Practical/Practical5/Prac5c.csv'
-Outpufile='C:/Users/ADITYA/Downloads/Ads_Practical/Practical5/Prac5c_retrieve.csv'
+    all_files = os.listdir(".")
+    valid_images = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
 
-print('Loading..',Inputfile)
-Data=pd.read_csv(Inputfile)
-print('## Raw Data')
-print(Data)
+    if not valid_images:
+        print("No valid images found for resizing.")
+        return 0, 0
 
-print('\nRows:',Data.shape[0])
-print('Columns:',Data.shape[1])
+    total_width = 0
+    total_height = 0
+    successful_images = 0
 
-Data=Data.dropna(thresh=2)
-print('\nCleaned Data')
-print(Data)
-print('\nRows:',Data.shape[0])
-print('Columns:',Data.shape[1]) 
+    for file in valid_images:
+        try:
+            with Image.open(file) as im:
+                width, height = im.size
+                total_width += width
+                total_height += height
+                successful_images += 1
+        except Exception as e:
+            print(f"Skipping corrupt file {file}: {e}")
+            continue
 
-Prac6: Processing Data-Builds the time hub, link and satellite
+    if successful_images == 0:
+        return 0, 0
 
-import pandas as pd
-import sqlite3 as sq
-from datetime import datetime, timedelta
-from pytz import timezone
-# Connect to database
-conn = sq.connect('datavault.db')
-# ---------- TIME HUB ----------
-dates = [datetime(2018, 1, 1) - timedelta(hours=i) for i in range(10)]
+    mean_width = int(total_width / successful_images)
+    mean_height = int(total_height / successful_images)
 
-Hub = pd.DataFrame({
-'DateTimeKey': [d.strftime('%Y-%m-%d-%H-%M-%S') for d in dates],
-'DateTime': [d.strftime('%Y-%m-%d %H:%M:%S') for d in dates]
-})
-Hub.to_sql('Hub-Time', conn, if_exists='replace', index=False)
-print("TIME HUB")
-print(Hub)
-# ---------- LINK & SATELLITE ----------
-for zone in ['Asia/Kolkata', 'Europe/London', 'America/New_York']:
-    Satellite = Hub.copy()
-    Satellite['LocalTime'] = [
-        d.replace(tzinfo=timezone('UTC')).astimezone(timezone(zone)).strftime('%Y-%m-%d%H:%M:%S')
-for d in dates
-]
-Satellite[['DateTimeKey']].to_sql(
-'Link-' + zone.replace('/', '-'),
-conn, if_exists='replace',
-)
-Satellite.to_sql(
-'Satellite-' + zone.replace('/', '-'),
-conn, if_exists='replace', index=False
-)
-print("\n", zone)
-print(Satellite)
-conn.close()
-print("\nDONE!")
+    print(f"Mean dimensions calculated: {mean_width}x{mean_height}")
 
-Prac 7 :Transforming Data: To illustrate the consolidation process
+    for file in valid_images:
+        try:
+            with Image.open(file) as im:
+                im_resized = im.resize((mean_width, mean_height))
+                im_resized.save(file, "JPEG", quality=95)
+                print(f"{file} is resized.")
+        except Exception as e:
+            print(f"Failed to resize {file}: {e}")
 
-import pandas as pd
-import sqlite3
-from datetime import datetime
-from pytz import timezone
+    return mean_width, mean_height
 
-db1 = sqlite3.connect("datavault.db")
-db2 = sqlite3.connect("datawarehouse.db")
 
-utc = datetime(2005,4, 14, 10, 15).replace(tzinfo=timezone("UTC"))
+def generate_video(image_folder, video_name, width, height):
+    """Generates an AVI video from the resized images."""
+    os.chdir(image_folder)
 
-zone = "Asia/Kolkata"
-local = utc.astimezone(timezone(zone))
+    images = [
+        img for img in os.listdir(image_folder) if img.lower().endswith(VALID_EXTENSIONS)
+    ]
+    print("Images found for video:", images)
 
-time = pd.DataFrame([{
-"DateTime": utc.strftime("%Y-%m-%d %H:%M:%S"),
-"Zone": zone,
-"LocalTime": local.strftime("%Y-%m-%d %H:%M:%S")
-}])
+    if not images:
+        print("No images available to generate video.")
+        return
 
-time.to_sql("Hub-Time", db1, if_exists="replace", index=False)
-time.to_sql("Dim-Time", db2, if_exists="replace", index=False)
+    fourcc = cv2.VideoWriter_fourcc(*"DIVX")
+    video = cv2.VideoWriter(video_name, fourcc, 1, (width, height))
 
-person = pd.DataFrame([{
-"Name": "Aaditya Mishra",
-"BirthTime": local.strftime("%Y-%m-%d %H:%M:%S")
-}])
-person.to_sql("Hub-Person", db1, if_exists="replace", index=False)
-person.to_sql("Dim-Person", db2, if_exists="replace", index=False)
+    for image in images:
+        img_path = os.path.join(image_folder, image)
+        frame = cv2.imread(img_path)
+        if frame is not None:
+            video.write(frame)
+        else:
+            print(f"Could not read frame for {image}")
 
-print("UTC Time:", utc)
-print("Local Time:", local)
-print("\nConsolidated Data:")
-print(person)
-db1.close()
-db2.close()
+    video.release()
+    cv2.destroyAllWindows()
+    print("Video generation complete!")
+
+
+if __name__ == "__main__":
+    m_width, m_height = resize_images_to_mean(PATH)
+
+    if m_width > 0 and m_height > 0:
+        generate_video(PATH, VIDEO_NAME, m_width, m_height)
+
+
+Prac: Read and display Image
+
+import cv2 
+import numpy as np  
+img = cv2.imread("", 1) 
+cv2.imshow("image", img) 
+cv2.waitKey(0) 
+cv2.destroyAllWindows() 
+
+Prac:
+
+
+
+Prac:
+
+
+
+Prac:
+
+
+
