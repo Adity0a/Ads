@@ -1,996 +1,644 @@
-Prac:Log Transformation
-
-clc;
-clear all;
-a=imread("");
-b=double(a);
-subplot(1,2,1);
-imshow(a);
-title('Original Image')
-t=10;
-[m,n]=size(b);
-for i=1:m
-    for j=1:n
-        c(i,j)=t*log(1+b(i,j))
-    end
-end
-subplot(1,2,2);
-imshow(uint8(c));
-title('Log Transform Image')
-
-
-Prac:Power law Transformation
-
-clc;
-clear all;
-a=imread("");
-b=double(a);
-subplot(1,2,1);
-imshow(a);
-title('Original Image')
-k=1;
-gamma=1;
-[m,n]=size(b);
-for i=1:m
-    for j=1:n
-        c(i,j)=k*(b(i,j)^gamma);
-    end
-end
-subplot(1,2,2);
-imshow(uint8(c));
-title('Power Law Transformation')
-
-Prac:Negation
-
-clc;
-clear all;
-a=imread("");
-subplot(1,2,1);
-imshow(a)
-title('Original img')
-[m,n] = size(a);
-for i = 1:m
-    for j = 1:n
-        c(i,j) = 255 - a(i,j)
-    end
-end
-subplot(1,2,2);
-imshow(c)
-title('negation img')
-
-Prac:Contrast Stretching
-
-clc;
-clear all; 
-a = imread("");
-
-if size(a, 3) == 3
-    a = rgb2gray(a);
-end
-b = double(a); subplot(2,3,1); 
-imshow(a); title('Original img');
-
-f1 = bitget(b, 1); subplot(2,3,2); 
-imshow(f1); title('bit 1 img');
-
-f2 = bitget(b, 2); subplot(2,3,3); 
-imshow(f2); title('bit 2 img');
-
-f3 = bitget(b, 4); subplot(2,3,4); 	
-imshow(f3); title('bit 4 img');
-
-f4 = bitget(b, 6); subplot(2,3,5); 
-imshow(f4); title('bit 6 img');
-
-f5 = bitget(b, 8); subplot(2,3,6); 
-imshow(f5); title('bit 8 img');
-
-
-Prac:Gray-level Slicing with and without background
-
-clc;
-clear all;
-a = imread("");
-b=double(a);
-[m,n]=size(b);
-x1=input("Enter x1=");
-x2=input("Enter x2=");
-c=zeros(m,n);
-d=zeros(m,n);
-for i=1:m
-    for j=1:n
-        if(b(i,j)>=x1&&b(i,j)<=x2)
-            c(i,j)=255;
-        else c(i,j)=0;
-        end
-    end
-end
-for i=1:m
-    for j=1:n
-        if(b(i,j)>=x1&&b(i,j)<=x2)
-            d(i,j)=255;
-        else
-            d(i,j)=b(i,j);
-        end
-    end
-end
-subplot(1,3,1);
-imshow(a);
-title('Original Image');
-subplot(1,3,2);
-imshow(uint8(c));
-title('Gray Level Slicing Without Background');
-subplot(1,3,3);
-imshow(uint8(d));
-title('Gray Level Slicing With Background');
-
-
-Prac: Bit-Plane Slicing
-
-clc;
-clear all;
-a = imread("");
-b=double(a);
-[m,n]=size(b);
-x1=input("Enter x1=");
-x2=input("Enter x2=");
-y1=input("Enter y1=");
-y2=input("Enter y2=");
-slope1=y1/x1;
-slope2=(y2-y1)/(x2-x1);
-slope3=(255-y2)/(255-x2);
-intercept1=y1-slope2*x1;
-intercept2=y2-slope3*x2;
-ics=zeros(m,n);
-for i=1:m
-    for j=1:n
-        if(0<b(i,j)&&b(i,j)<x1)
-            ics(i,j)=slope1*b(i,j);
-        elseif(x1<b(i,j)&&b(i,j)<x2)
-            ics(i,j)=slope2*b(i,j)+intercept1;
-        else(x2<b(i,j)&&b(i,j)<255)
-            ics(i,j)=slope3*b(i,j)+intercept2;
-        end
-        end
-end
-subplot(1,2,1);
-imshow(a);
-title('Original Image')
-subplot(1,2,2);
-imshow(uint8(ics));
-title('Contrast Stretching')
-
-Prac:Discrete Fourier Transform
-
-clc;
-clear all;
-S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
-h = mkfftfilter(S,'gauss',0.4);
-S2 = fft2(im2double(S));
-S3 = S2.*fftshift(h);
-S4=real(ifft(S3));
-subplot(2,2,1);
-imshow(S);
-title('Original Image');
-subplot(2,2,2);
-imshow(S2);
-title('Fourier transform');
-subplot(2,2,3);
-imshow(S3);
-title('shifted Fourier transform');
-subplot(2,2,4);
-imshow(S4);
-title('Filtered Image');
-
-Prac: Discrete fourier Transform(DFT)
-
-clc; 
-clear all;  
-I = imread(""); 
-I1 = double(I); 
-J = fft2(I1); 
-L = fftshift(real(J));  
-subplot(1,3,1); 
-imshow(I); 
-title('Original Image');  
-subplot(1,3,2); 
-imshow(J); 
-title('Fourier transform');  
-subplot(1,3,3); 
-imshow(L); 
-title('shifted Fourier transform');
-
-Prac:Gaussian low pass filter
-
-clc; 
-clear all;  
-S = imread(""); 
-S = rgb2gray(S); 
-S2 = fft2(im2double(S)); 
-S3 = fftshift(S2);  
-[M,N] = size(S); 
-[u,v] = meshgrid(1:N,1:M); 
-D = sqrt((u-N/2).^2 + (v-M/2).^2); 
-D0 = 30;  
-H = exp(-(D.^2)/(2*D0^2)); 
-S4 = real(ifft2(ifftshift(S3.*H)));  
-subplot(1,3,1); imshow(S); 
-title('Original Image');  
-subplot(1,3,2); 
-imshow(log(1+abs(S3)),[]); 
-title('Fourier Transform');  
-subplot(1,3,3); 
-imshow(S4,[]); 
-title('Gaussian Low Pass Filter'); 
-
-Prac:Butterworth low pass filter
-
-clc;
-clear all;
-S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
-h = mkfftfilter(S,'butterworth1',0.4);
-S2 = fft2(im2double(S));
-S3 = S2.*fftshift(h);
-S4=real(ifft(S3));
-subplot(2,2,1);
-imshow(S);
-title('Original Image');
-subplot(2,2,2);
-imshow(S2);
-title('Fourier transform');
-subplot(2,2,3);
-imshow(S3);
-title('shifted Fourier transform');
-subplot(2,2,4);
-imshow(S4);
-title('Filtered Image');
-
-Prac:ideal high pass filter
-
-clc;
-clear all;
-S = imread(fullpath(getIPCVpath()+"\images\mea
-sure_gray.jpg"));
-S2 = fft2(im2double(S));
-h=ffilt('hp',3,0.2,0.3);
-img=imfilter(S2,h);
-S4=real(ifft(img));
-subplot(1,3,1);
-imshow(S);
-title('Original Image');
-subplot(1,3,2);
-imshow(S2);
-title('Fourier Image');
-subplot(1,3,3);
-imshow(S4);
-title('Filtered Image');
-
-Prac:ideal low pass filter
-
-clc;
-clear all;
-S = imread(fullpath(getIPCVpath()+"\images\measure_gray.jpg"));
-S2 = fft2(im2double(S));
-h=ffilt('lp',3,0.2,0.3);
-img=imfilter(S2,h);
-S4=real(ifft(img));
-subplot(1,3,1);
-imshow(S);
-title('Original Image');
-subplot(1,3,2);
-imshow(S2);
-title('Fourier Image');
-subplot(1,3,3);
-imshow(S4);
-title('Filtered Image');
-
-Prac:Image Averaging for Noise Removal Using Averaging filter
-
-Image=imread("");
-NoisyImage=imnoise(Image,'salt & pepper', 0.02);
-F1=fspecial('average',3);
-FilterImage=imfilter(NoisyImage,F1);
-subplot(1,3,1);
-imshow(Image);
-title('Original Image');
-subplot(1,3,2);
-imshow(NoisyImage);
-title('Noisy Image');
-subplot(1,3,3);
-imshow(FilterImage);
-title('Filtered Image');
-
-Prac:Smoothing
-
-Image=imread("");
-NoisyImage=imnoise(Image,'gaussian', 0.02);
-F1=fspecial('average',3);
-wienerImage=imwiener2(NoisyImage,[5,5],0.02);
-subplot(1,3,1);
-imshow(Image);
-title('Original Image');
-subplot(1,3,2);
-imshow(NoisyImage);
-title('Noisy Image');
-subplot(1,3,3);
-imshow(wienerImage);
-title('Wiener Filter');
-
-Prac:Varying the number of Intensity levels in a Digital image
-
-clc; 
-clear all; 
-a = imread(""); 
-a = double(rgb2gray(a)); 
-subplot(2,2,1); 
-imshow(uint8(a)); xtitle("Original Image"); 
-subplot(2,2,2); 
-imshow(uint8(floor(a/128)*128)); xtitle("2 Intensity Levels"); 
-subplot(2,2,3); 
-imshow(uint8(floor(a/64)*64)); 
-xtitle("4 Intensity Levels"); 
-subplot(2,2,4); 
-imshow(uint8(floor(a/32)*32)); xtitle("8 Intensity Levels");
-
-Prac: Program to perform image averaging(image addition) for noise reduction
-
-clc; 
-clear all; 
-a = double(imread("")); 
-b = double(imread("")); 
-avg = uint8((a+b)/2); 
-subplot(1,3,1); 
-imshow(uint8(a)); 
-xtitle("Image 1"); 
-subplot(1,3,2); 
-imshow(uint8(b)); 
-xtitle("Image 2"); 
-subplot(1,3,3); 
-imshow(avg); 
-xtitle("Averaged Image");
-
-Prac: Program to compare images using subtraction for enhancing the difference between images
-
-clc; 
-clear all; 
-a = double(imread("")); 
-b = double(imread("")); 
-sub = uint8((a-b)); 
-subplot(1,3,1); 
-imshow(uint8(a)); 
-xtitle("Image 1"); 
-subplot(1,3,2); 
-imshow(uint8(b)); 
-xtitle("Image 2"); 
-subplot(1,3,3); 
-imshow(sub); 
-xtitle("Subtracted Image");
-
-Prac: Mean
-
-clc; 
-clear all; 
-
-img = imread("");
-img = double(img); [m, n] = size(img); 
-filtered = zeros(m, n); 
-for i = 2:m-1   
-    for j = 2:n-1       
-        window = img(i-1:i+1, j-1:j+1);       
-        filtered(i,j) = sum(window) / 9;   
-    end 
-end 
-filtered = uint8(filtered); 
-figure(); subplot(1,2,1); imshow(uint8(img)); 
-title("Original Image"); 
-subplot(1,2,2); imshow(filtered); 
-title("Mean Filtered Image");
-
-Prac: median
-
-clc; 
-clear all;  
-img = imread(""); 
-img = double(img);  
-[m, n] = size(img); 
-filtered = img;  
-for i = 2:m-1   
-    for j = 2:n-1      
-        window = img(i-1:i+1, j-1:j+1);      
-        pixels = matrix(window, 1, 9);      
-        filtered(i,j) = median(pixels);   
-    end 
-end  
-filtered = uint8(filtered); 
-figure(); subplot(1,2,1); imshow(uint8(img)); 
-title("Original Image"); 
-subplot(1,2,2); imshow(filtered); 
-title("Median Filtered Image");
-
-Prac: Max-Min and Min-Max filter
-
-clc; 
-clear all;  
-img = imread(""); 
-img = double(img); 
-[m, n] = size(img); 
-max_filtered = img; 
-min_filtered = img; 
-maxmin_filtered = img; 
-for i = 2:m-1   
-    for j = 2:n-1       
-        window = img(i-1:i+1, j-1:j+1);
-        max_filtered(i,j) = max(window);       
-        min_filtered(i,j) = min(window); 
-      maxmin_filtered(i,j) = (max(window) + min(window)) / 2;   
-  end 
-end 
-max_filtered = uint8(max_filtered); 
-min_filtered = uint8(min_filtered); 
-maxmin_filtered = uint8(maxmin_filtered); 
-figure(); 
-subplot(2,2,1); 
-imshow(uint8(img)); 
-title("Original Image");  
-subplot(2,2,2); 
-imshow(max_filtered); 
-title("Max Filter");
-
-Prac: Erosion
-
-clc;
-clear all;
-I = imread("")
-sturctEle = imcreatese('ellipse',5,5);
-erosion = imerode(I,sturctEle);
-subplot(1,2,1);
-imshow(I);
-title('Original Image');
-subplot(1,2,2);
-imshow(erosion);
-title('Eroded Image');
-
-Prac: Dilation
-
-clc;
-clear all;
-I = imread("")
-sturctEle = imcreatese('ellipse',7,7);
-erosion = imdilate(I,sturctEle);
-subplot(1,2,1);
-imshow(I);
-title('Original Image');
-subplot(1,2,2);
-imshow(erosion);
-title('Dilate Image');
-
-Prac: Opening
-
-clc;
-clear all;
-I = imread("")
-sturctEle = imcreatese('ellipse',50,50);
-erosion = imerode(I,sturctEle)
-opening = imdilate(erosion,sturctEle);
-subplot(1,2,1);
-imshow(I);
-title('Original Image');
-subplot(1,2,2);
-imshow(opening);
-title('Opening Image');
-
-
-Prac: Closing
-
-clc;
-clear all;
-I = imread("")
-sturctEle = imcreatese('ellipse',4,4);
-dilation = imdilate(I,sturctEle)
-closing = imerode(dilation,sturctEle);
-
-subplot(1,2,1);
-imshow(I);
-title('Original Image');
-
-subplot(1,2,2);
-imshow(closing);
-title('Closing Image');
-
-Prac: Boundary Extraction
-
-clc;
-clear all;
-
-I = imread("")
-sturctEle = imcreatese('ellipse',40,40);
-erosion = imerode(I,sturctEle);
-boundry = I-erosion
-subplot(2,2,1);
-imshow(I);
-title('Original Image');
-subplot(2,2,2);
-imshow(erosion);
-title('Opening Image');
-subplot(2,2,3);
-imshow(boundry);
-title('Boundary Image');
-
-Prac: Morphological Gradient
-
-clc;
-clear all;
-
-I = imread("")
-sturctEle = imcreatese('ellipse',4,4);
-dilation = imdilate(I,sturctEle)
-erosion = imerode(I,sturctEle);
-gradient = dilation-erosion
-subplot(2,2,1);
-imshow(I);
-title('Original Image');
-subplot(2,2,2);
-imshow(dilation);
-title('dilated Image');
-subplot(2,2,3);
-imshow(erosion);
-title('erosion Image');
-subplot(2,2,4);
-imshow(gradient);
-title('Morphological Gradient');
-
-Prac: Top-hat Transformation
-
-clc;
-clear all;
-I = imread("")
-sturctEle = imcreatese('ellipse',30,30);
-erosion = imerode(I,sturctEle);
-opening = imdilate(erosion,sturctEle)
-tophat = I-opening
-subplot(2,2,1);
-imshow(I);
-title('Original Image');
-subplot(2,2,2);
-imshow(opening);
-title('opening Image');
-subplot(2,2,3);
-imshow(tophat);
-title('tophat Image');
-
-Prac: Region filling
-
-clc; 
-clear all; 
-S = imread(""); 
-S = rgb2gray(S); 
-BW = im2bw(S, 0.5);
-subplot(1,3,1); imshow(S); xtitle("Original Image"); 
-subplot(1,3,2); imshow(BW); xtitle("Binary Image"); 
-[L, num] = imlabel(~BW);
-Filled = (L == 0);
-subplot(1,3,3); imshow(Filled); xtitle("Region Filled Image");
-
-Prac: open cv morphological operation package
-#Access pixel value
-
-import cv2
-import numpy as numpy
-img=cv2.imread("")
-pixel=img[100,100]
-print(pixel)
-
-
-Prac: Image Propertiess
-
-import cv2
-img=cv2.imread("")
-dimensions=img.shape
-height=img.shape[0]
-width=img.shape[1]
-channels=img.shape[2]
-size1=img.size
-
-print('Image Dimension: ',dimensions)
-print('Image Height: ',height)
-print('Image Widht: ',width)
-print('Number of Channels: ',channels)
-print('Image Size: ',size1)
-
-Prac: convert image to grayscale
-
-import cv2
-import numpy as numpy
-img=cv2.imread("")
-cv2.imshow('image',img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-cv2.imshow('Gray Image',gray)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Rotate Image
-
-import cv2
-import numpy as np
-img=cv2.imread("")
-cv2.imshow('image',img)
-cv2.destroyAllWindows()
-(h,w)=img.shape[:2]
-center=(w/2,h/2)
-angle90=90
-scale=1.0
-
-M=cv2.getRotationMatrix2D(center, angle90, scale)
-rotate90=cv2.warpAffine(img,M,(h,w))
-cv2.imshow('image rotated by 90 degrees',rotate90)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Draw a circle
-
-import cv2
-import numpy as np
-img=cv2.imread("")
-cv2.circle(img,(80,80),55,(0,255,0),-1)
-cv2.imshow('image',img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Add text to image
-
-import cv2
-import numpy as np
-img=cv2.imread("")
-font=cv2.FONT_HERSHEY_SIMPLEX
-cv2.putText(img,'Hello',(100,140),font,5,(255,255,255))
-cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-cv2.imshow('image',img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Draw a ellipse
-
-import cv2
-import numpy as np
-
-img = cv2.imread("")
-cv2.ellipse(img, (250, 150), (330, 80), 5, 0, 360, (0, 0, 255), 15)
-cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-cv2.resizeWindow('image', 600, 600)
-cv2.imshow('image', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Draw a Square
-
-import cv2
-import numpy as np
-
-img = cv2.imread("")
-
-cv2.rectangle(img, (15, 25), (600, 500), (0, 255, 255), 35)
-
-cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-cv2.resizeWindow('image', 600, 600)
-cv2.imshow('image', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-Prac: Edge Detection
-
-import cv2
-import numpy as np
-
-img = cv2.imread("", 1)
-
-if img is None:
-    print("Error: Could not open or find the image.")
-else:
-    cv2.namedWindow("image", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow("image", 800, 600)  # Set a manageable window size
-    cv2.imshow("image", img)
-
-    edges = cv2.Canny(img, 100, 200)
-
-    cv2.namedWindow("Edge Detected Image", cv2.WINDOW_NORMAL)
-    cv2.resizeWindow(
-        "Edge Detected Image", 800, 600
-    )  # Set a manageable window size
-    cv2.imshow("Edge Detected Image", edges)
-
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-Prac: Open Cv Blur (Image Smoothing)
-
-import cv2 
-import numpy as np 
-img = cv2.imread('', 1) 
-if img is None:
-    print("Error: Image not found.")
-else:
-    cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-    cv2.resizeWindow('image', 600, 600)
-    cv2.imshow('image', cv2.blur(img, (5, 5))) 
-
-    cv2.waitKey(0) 
-    cv2.destroyAllWindows()
-
-
-
-Prac: Apply Gaussian Blur to video
-
-import cv2
-import numpy as np
-
-cap = cv2.VideoCapture(
-    ""
-)
-
-while cap.isOpened():
-    ret, frame = cap.read()
-
-    # If the video ends or cannot be read, break out of the loop safely
-    if not ret:
+Prac2: To implement TCP socket programming using a client-server based program using TCP to find if the entered number is prime
+
+Server.java:
+
+import java.io.*; 
+import java.net.*; 
+ 
+class tcpServerPrime { 
+    public static void main(String args[]) { 
+        try { 
+            ServerSocket ss = new ServerSocket(8001); 
+            System.out.println("Aaditya's server has started....."); 
+            Socket s = ss.accept(); 
+            DataInputStream in = new DataInputStream(s.getInputStream()); 
+            int num = in.readInt(); 
+            DataOutputStream out = new DataOutputStream(s.getOutputStream()); 
+             
+            boolean flag = false; 
+            for (int i = 2; i <= num / 2; ++i) { 
+                if (num % i == 0) { 
+                    flag = true; 
+                    break; 
+                } 
+            } 
+            if (!flag) 
+                out.writeUTF(num + " is a prime number."); 
+            else 
+                out.writeUTF(num + " is not a prime number."); 
+             
+            s.close(); 
+            ss.close(); 
+        } catch (Exception e) { 
+            System.out.println(e.toString()); 
+        } 
+    } 
+ } 
+
+Client.java:
+
+import java.io.*; 
+import java.net.*; 
+
+class tcpClientPrime {
+    public static void main(String args[]) {
+        try {
+            Socket cs = new Socket("localhost", 8001);
+            BufferedReader infu = new BufferedReader(new InputStreamReader(System.in));System.out.print("Enter a Number: ");
+            int a = Integer.parseInt(infu.readLine());
+            DataOutputStream out = new DataOutputStream(cs.getOutputStream());
+            out.writeInt(a);
+            DataInputStream in = new DataInputStream(cs.getInputStream());
+            System.out.println(in.readUTF());
+            cs.close();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+}        
+
+**********
+Prac3: A client-server based program using TCP to find if the entered number is Even or Odd
+
+Server.java:
+
+import java.io.*; 
+import java.net.*; 
+class tcpServerOddEven { 
+public static void main(String args[]) {
+    try {
+        ServerSocket ss = new ServerSocket(8001);
+        System.out.println("Aaditya's server has started.....");
+        Socket s = ss.accept();
+        DataInputStream in = new DataInputStream(s.getInputStream());
+        int num = in.readInt();
+        DataOutputStream out = new DataOutputStream(s.getOutputStream());
+        if (num % 2 == 0) {
+            out.writeUTF(num + " is an even number.");
+        } else {
+            out.writeUTF(num + " is an odd number.");
+        }
+        s.close();
+        ss.close();
+    } catch (Exception e) {
+        System.out.println(e.toString());
+    }
+}
+}
+
+Client.java:
+
+import java.io.*; 
+import java.net.*; 
+class tcpClientOddEven {
+    public static void main(String args[]) {
+        try {
+            Socket cs = new Socket("localhost", 8001);
+            BufferedReader infu = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Enter a Number: ");
+            int a = Integer.parseInt(infu.readLine());
+            DataOutputStream out = new DataOutputStream(cs.getOutputStream());
+            out.writeInt(a);
+            DataInputStream in = new DataInputStream(cs.getInputStream());
+            System.out.println(in.readUTF());
+            cs.close();
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+    }
+}
+
+**********
+Prac4: A Client-server TCP based Chatting Application PythonCode
+
+Server.py:
+
+import socket 
+ 
+s = socket.socket() 
+s.bind(('localhost', 8000)) 
+s.listen(1) 
+print("Waiting for connection............") 
+c, addr = s.accept() 
+ 
+while True: 
+    msg = c.recv(1024).decode() 
+    if msg.lower() == "stop": 
+        break 
+    print("Client says:", msg) 
+    reply = input("Your reply: ") 
+    c.send(reply.encode()) 
+ 
+c.close() 
+s.close() 
+
+Client.py:
+
+import socket 
+ 
+s = socket.socket() 
+s.connect(('localhost', 8000)) 
+print("To stop Chatting type stop") 
+ 
+while True: 
+    msg = input("Aaditya says: ") 
+    s.send(msg.encode()) 
+    if msg.lower() == "stop": 
+        break 
+    reply = s.recv(1024).decode() 
+    print("Server says:", reply) 
+s.close() 
+
+
+**********
+Prac5a: To implement client-server communication using UDP socket programming in python and determine whether a given number is even or odd
+
+Server.py:
+
+import socket 
+ 
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server_socket.bind(("localhost", 2000)) 
+print("Aaditya's server has Started....") 
+ 
+data, address = server_socket.recvfrom(1024) 
+num = data.decode() 
+print("Received number:", num) 
+ 
+a = int(num) 
+if a % 2 == 0: 
+    result = 'Number is even' 
+else: 
+    result = 'Number is odd' 
+ 
+data = result.encode() 
+server_socket.sendto(data, address) 
+server_socket.close() 
+
+Client.py:
+
+import socket 
+ 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+num = input("Enter a number: ") 
+data = num.encode() 
+ 
+client_socket.sendto(data, ("localhost", 2000)) 
+data, address = client_socket.recvfrom(1024) 
+result = data.decode() 
+print(result) 
+ 
+client_socket.close() 
+
+**********
+Prac5b: To implement a UDP client-server application in python to calculate the factorial of a given number using server-side programming
+
+Server.py:
+
+import socket 
+import math 
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server_socket.bind(("localhost", 2000)) 
+print("Aaditya's server has Started for Factorial Calculation....") 
+data, address = server_socket.recvfrom(1024) 
+num = data.decode() 
+print("Received number:", num) 
+try:
+    a = int(num)
+    if a < 0:
+        result = "Error: Factorial of negative number doesn't exist"
+    else:
+        fact = math.factorial(a)
+        result = f"Factorial of {a} is {fact}" 
+except ValueError:
+    result = "Error: Invalid input. Please send an integer." 
+data = result.encode() 
+server_socket.sendto(data, address) 
+server_socket.close() 
+
+Client.py: 
+
+import socket 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+num = input("Enter a number: ") 
+data = num.encode() 
+client_socket.sendto(data, ("localhost", 2000)) 
+data, address = client_socket.recvfrom(1024) 
+result = data.decode() 
+print(result) 
+client_socket.close() 
+
+**********
+Prac6a: To implement Remote Procedure Call (RPC) using socket programming in Python for addition, subtraction, multiplication, and division. 
+
+Server.py:
+
+import socket 
+host = socket.gethostbyname(socket.gethostname()) 
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server.bind((host, 1200)) 
+while True: 
+    data, address = server.recvfrom(1024)
+    msg = data.decode().split()
+    op, a, b = msg[0], int(msg[1]), int(msg[2])
+    if op == "add":
+        res = a + b
+    elif op == "sub": 
+        res = a - b
+    elif op == "div":
+        res = a / b
+    elif op == "mul":
+        res = a * b
+    server.sendto(str(res).encode(), (host, 1300)) 
+
+Client.py:
+
+import socket 
+host = socket.gethostbyname(socket.gethostname()) 
+client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+client.bind((host, 1300)) 
+print("\nRPC Client\n") 
+print("1. Add      - add 3 4\n2. Subtract - sub 3 4\n3. Divide   - div 10 5\n4. Multiply - mul 2 5") 
+print("Enter method name and numbers:") 
+while True: 
+    data = input() 
+    client.sendto(data.encode(), (host, 1200)) 
+    result, address = client.recvfrom(1024) 
+    print("Result =", result.decode()) 
+
+**********
+Prac6b: To implement an RPC-based program to calculate the square, square root, cube, and cube root of a given number.  
+
+Server.py:
+
+import socket 
+import math 
+ 
+server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+server.bind(("localhost", 1200)) 
+print("RPC Server started and listening on port 1200...") 
+ 
+while True: 
+    data, address = server.recvfrom(4096) 
+    msg = data.decode().split() 
+    if not msg: 
+        continue 
+    if msg[0].lower() == "q": 
+        print("Shutting down server...") 
+        break 
+     
+    method = msg[0].lower() 
+    try: 
+        num = int(msg[1]) 
+        if method == "square": 
+            result = str(num * num) 
+        elif method == "squareroot": 
+            result = str(math.sqrt(num)) 
+        elif method == "cube": 
+            result = str(num * num * num) 
+        elif method == "cuberoot": 
+            result = str(num ** (1/3)) 
+        else: 
+            result = "Unknown operation" 
+    except (IndexError, ValueError): 
+        result = "Error: Invalid number format or missing argument." 
+         
+    print(f"Processed: {method} {num if 'num' in locals() else ''} -> Result: {result}")
+    server.sendto(result.encode(), ("localhost", 1300)) 
+ 
+Client.py:
+
+import socket 
+host = "localhost" 
+client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+client.bind((host, 1300)) 
+print("\nRPC Client Connected\n") 
+print("1. Square      - square 5") 
+print("2. Square Root - squareroot 16") 
+print("3. Cube        - cube 3") 
+print("4. Cube Root   - cuberoot 27") 
+print("5. Quit Server - q") 
+print("\nEnter method name and a number:") 
+while True:
+    data = input("> ")
+    if not data.strip():
+        continue
+    client.sendto(data.encode(), (host, 1200))
+    if data.strip().lower() == "q":
+        print("Exiting client...")
         break
+    result, address = client.recvfrom(1024)
+    print("Result =", result.decode(), "\n") 
 
-    frame = cv2.resize(
-        frame, (540, 380), fx=0, fy=0, interpolation=cv2.INTER_CUBIC
-    )
-    cv2.imshow("Frame", frame)
+**********
+Prac7a: To implement a remote method that displays the current date and time using Java RMI.
 
-    gaussianblur = cv2.GaussianBlur(frame, (5, 5), 0)
-    cv2.imshow("gblur", gaussianblur)
+InterDate.java
 
-    # Moved inside the loop with correct 4-space indentation
-    if cv2.waitKey(25) & 0xFF == ord("q"):
-        break
+import java.rmi.*; 
+public interface InterDate extends Remote { 
+public String display() throws Exception; 
+}
 
-cap.release()
-cv2.destroyAllWindows()
+ServerDate.java:
 
-Prac: Video Frame Capture and display video using OpenCv
+import java.rmi.*; 
+import java.rmi.server.*; 
+import java.util.*; 
+public class ServerDate extends UnicastRemoteObject implements InterDate { 
+    public ServerDate() throws Exception { 
+    }
+    public String display() throws Exception {
+        Date d = new Date();
+        return d.toString();
+    }
 
-import cv2
-video=cv2.VideoCapture(0)
-while(True):
-    ret,frame=video.read()
-    cv2.imshow('frame',frame)
-    if cv2.waitKey(1)&0xFF==ord('q'):
-        break
-video.release()
-cv2.destroyAllWindows()
+    public static void main(String args[]) throws Exception {
+        ServerDate s1 = new ServerDate();
+        Naming.rebind("ST", s1);
+        System.out.println("Server Registered.....");
+        }
+    }
 
-Prac: Apply thresholding to intensity
+ClientDate.java:
 
-import cv2
-import numpy as np
+import java.rmi.*; 
+public class ClientDate { 
+    public static void main(String args[]) throws Exception {
+        InterDate h1 = (InterDate) Naming.lookup("ST");
+        String s1 = h1.display();
+        System.out.println("Current Date and Time: " + s1);
+        }
+    } 
 
-cap = cv2.VideoCapture(
-    ''
-)
+>javac InterDate.java ServerDate.java ClientDate.java
+>rmiregistry
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
-        
-    frame = cv2.resize(frame, (540, 380), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
-    cv2.imshow("Frame", frame)
+>java ServerDate
+>java ClientDate
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    Thresh = cv2.adaptiveThreshold(
-        gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 11, 2
-    )
-    cv2.imshow("Thresh", Thresh)
+**********
+Prac7a: To implement client–server communication using XML-RPC in Python to display the current date and time. 
 
-    if cv2.waitKey(25) & 0xFF == ord('q'):
-        break
+Server.py:
 
-cap.release()
-cv2.destroyAllWindows()
+from xmlrpc.server import SimpleXMLRPCServer as S 
+import datetime as d 
+s = S(("localhost", 8000)) 
+s.register_function(lambda: str(d.datetime.now()), "display") 
+print("Aaditya's Server has Started!!.........") 
+s.serve_forever() 
 
-Prac: resize image to a comman size and generate a video from them
+Client.py:
 
-import os
-import cv2
-from PIL import Image
+import xmlrpc.client as c 
+h = c.ServerProxy("http://localhost:8000/") 
+print(h.display()) 
 
-PATH = r""
-VIDEO_NAME = "mygeneratedvideo.avi"
-VALID_EXTENSIONS = (".jpg", ".jpeg", ".png")
+**********
+Prac7b:To implement Java RMI to convert the digits of a given number into words.
 
+InterConvert.java:
 
-def resize_images_to_mean(folder_path):
-    """Calculates the average dimensions of valid images in a folder
+import java.rmi.*; 
+ 
+public interface InterConvert extends Remote { 
+    public String convertDigit(String no) throws Exception; 
+} 
 
-    and resizes all of them to that mean size.
-    """
-    os.chdir(folder_path)
+ServerConvert.java:
 
-    all_files = os.listdir(".")
-    valid_images = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
-
-    if not valid_images:
-        print("No valid images found for resizing.")
-        return 0, 0
-
-    total_width = 0
-    total_height = 0
-    successful_images = 0
-
-    for file in valid_images:
-        try:
-            with Image.open(file) as im:
-                width, height = im.size
-                total_width += width
-                total_height += height
-                successful_images += 1
-        except Exception as e:
-            print(f"Skipping corrupt file {file}: {e}")
-            continue
-
-    if successful_images == 0:
-        return 0, 0
-
-    mean_width = int(total_width / successful_images)
-    mean_height = int(total_height / successful_images)
-
-    print(f"Mean dimensions calculated: {mean_width}x{mean_height}")
-
-    for file in valid_images:
-        try:
-            with Image.open(file) as im:
-                im_resized = im.resize((mean_width, mean_height))
-                im_resized.save(file, "JPEG", quality=95)
-                print(f"{file} is resized.")
-        except Exception as e:
-            print(f"Failed to resize {file}: {e}")
-
-    return mean_width, mean_height
+import java.rmi.*; 
+import java.rmi.server.*; 
+ 
+public class ServerConvert extends UnicastRemoteObject implements InterConvert { 
+    public ServerConvert() throws Exception { 
+    } 
+    public String convertDigit(String no) throws Exception { 
+        String str = ""; 
+        for (int i = 0; i < no.length(); i++) { 
+            int p = no.charAt(i); 
+            if (p == 48) { str += "zero "; } 
+            if (p == 49) { str += "one "; } 
+            if (p == 50) { str += "two "; } 
+            if (p == 51) { str += "three "; } 
+            if (p == 52) { str += "four "; } 
+            if (p == 53) { str += "five "; } 
+            if (p == 54) { str += "six "; } 
+            if (p == 55) { str += "seven "; } 
+            if (p == 56) { str += "eight "; } 
+            if (p == 57) { str += "nine "; } 
+        } 
+        return str; 
+    } 
+    public static void main(String args[]) throws Exception { 
+        ServerConvert s1 = new ServerConvert(); 
+        Naming.bind("Wrd", s1); 
+        System.out.println("Object registered...."); 
+    } 
+} 
 
 
-def generate_video(image_folder, video_name, width, height):
-    """Generates an AVI video from the resized images."""
-    os.chdir(image_folder)
+ClientConvert.java:
 
-    images = [
-        img for img in os.listdir(image_folder) if img.lower().endswith(VALID_EXTENSIONS)
-    ]
-    print("Images found for video:", images)
+import java.io.*; 
+import java.rmi.*; 
+public class ClientConvert { 
+    public static void main(String args[]) throws Exception { 
+        InterConvert h1 = (InterConvert) Naming.lookup("Wrd"); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+        System.out.print("Enter a number : "); 
+        String no = br.readLine(); 
+        String ans = h1.convertDigit(no); 
+        System.out.println("The word representation of the entered digit is : " + ans); 
+    } 
+} 
 
-    if not images:
-        print("No images available to generate video.")
-        return
+>javac InterDate.java ServerDate.java ClientDate.java
+>rmiregistry
 
-    fourcc = cv2.VideoWriter_fourcc(*"DIVX")
-    video = cv2.VideoWriter(video_name, fourcc, 1, (width, height))
+>java ServerDate
+>java ClientDate
 
-    for image in images:
-        img_path = os.path.join(image_folder, image)
-        frame = cv2.imread(img_path)
-        if frame is not None:
-            video.write(frame)
-        else:
-            print(f"Could not read frame for {image}")
+**********
+Prac7B:To implement a client–server application in Python that converts the digits of a given number into their word representations. 
 
-    video.release()
-    cv2.destroyAllWindows()
-    print("Video generation complete!")
+Server.py:
 
+import socket 
+m = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE'] 
+s = socket.socket() 
+s.bind(('localhost', 5000)) 
+s.listen(1) 
+print("Aaditya server has started!!......") 
+while True:
+    conn, _ = s.accept()
+    data = conn.recv(1024).decode()
+    if data:
+        ans = " ".join(m[int(c)] for c in data if c.isdigit())
+        conn.send(ans.encode())
+    conn.close() 
 
-if __name__ == "__main__":
-    m_width, m_height = resize_images_to_mean(PATH)
+Client.py:
 
-    if m_width > 0 and m_height > 0:
-        generate_video(PATH, VIDEO_NAME, m_width, m_height)
+ import socket 
+s = socket.socket() 
+s.connect(('localhost', 5000)) 
+s.send(input("Enter a number: ").encode()) 
+print("Output:", s.recv(1024).decode()) 
+s.close() 
 
+**********
+Prac7C:To implement a Java RMI application to perform addition of two numbers using a remote method. 
 
-Prac: Read and display Image
+InterAdd.java:
 
-import cv2 
-import numpy as np  
-img = cv2.imread("", 1) 
-cv2.imshow("image", img) 
-cv2.waitKey(0) 
-cv2.destroyAllWindows() 
+import java.rmi.*; 
+ 
+public interface InterAdd extends Remote { 
+    public int add(int a, int b) throws Exception; 
+} 
 
-Prac: pseudo colouring on a grayscale image
+ServerAdd.java:
 
-clc;
-clear all;
-RGB = imread('');
-Image = rgb2gray(RGB);
-subplot(1,3,1);
-imshow(RGB);
-title('Original RGB Image');
-subplot(1,3,2);
-imshow(Image);
-title('Gray RGB Image');
-subplot(1,3,3);
-imshow(Image, jet(256));
-title('Pseudo Color Image');
-Histogram = imhist(Image);
-figure();
-plot(0:255, Histogram);
+import java.rmi.*; 
+import java.rmi.server.*; 
+ 
+public class ServerAdd extends UnicastRemoteObject implements InterAdd { 
+    public ServerAdd() throws Exception { 
+    } 
+ 
+    public int add(int a, int b) throws Exception { 
+        return a + b; 
+    } 
+ 
+    public static void main(String args[]) throws Exception { 
+        ServerAdd s = new ServerAdd(); 
+        Naming.rebind("Add", s); 
+        System.out.println("Server started..."); 
+    } 
+}
 
+ClientAdd.java:
 
-Prac: RGB to YCBCR
+import java.io.*; 
+import java.rmi.*; 
+ 
+public class ClientAdd { 
+    public static void main(String args[]) throws Exception { 
+        InterAdd obj = (InterAdd) Naming.lookup("Add"); 
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+        System.out.print("Enter first number: "); 
+        int a = Integer.parseInt(br.readLine()); 
+        System.out.print("Enter second number: "); 
+        int b = Integer.parseInt(br.readLine()); 
+        int result = obj.add(a, b); 
+        System.out.println("Addition = " + result); 
+    } 
+} 
 
-clc;
-clear all;
-rgb = imread("");
-ycbcr = rgb2ycbcr(rgb);
-subplot(2,3,1);
-imshow(rgb);
-title('Original RGB Image');
-subplot(2,3,2);
-imshow(ycbcr);
-title('YCBCR Image');
-subplot(2,3,3);
-imshow(ycbcr(:,:,1));
-title('Luminance');
-subplot(2,3,4);
-imshow(ycbcr(:,:,2));
-title('Chrominance Cb');
-subplot(2,3,5);
-imshow(hsv(:,:,3));
-title('Chrominance Cr');
+>javac InterDate.java ServerDate.java ClientDate.java
+>rmiregistry
 
+>java ServerDate
+>java ClientDate
 
-Prac: RGB to HSV
+**********
+Prac7c: To implement addition of two numbers using XML-RPC in Python. 
 
-clc;
-clear all;
-rgb = imread("");
-hsv = rgb2hsv(rgb);
-subplot(2,3,1);
-imshow(rgb);
-title('Original RGB Image');
-subplot(2,3,2);
-imshow(hsv);
-title('HSV Image');
-subplot(2,3,3);
-imshow(hsv(:,:,3));
-title('Intensity Component');
-subplot(2,3,4);
-imshow(hsv(:,:,1));
-title('hue Component');
-subplot(2,3,5);
-imshow(hsv(:,:,2));
-title('Saturation Component');
+Server.py:
 
-Prac: Read a color image and segment. It into RGB Planes
+from xmlrpc.server import SimpleXMLRPCServer 
+s = SimpleXMLRPCServer(("localhost", 8000), logRequests=False) 
+s.register_function(lambda a, b: a + b, "add") 
+print("Server started...") 
+try:
+    s.serve_forever() 
+except KeyboardInterrupt:
+    print("\nServer stopping...") 
 
-clc;
-clear all;
-I = imread("")
-r = size(I,1);
-c = size(I,2);
+Client.py:
 
-R = zeros(r,c,3);
-G = zeros(r,c,3);
-B = zeros(r,c,3);
+import xmlrpc.client 
+s = xmlrpc.client.ServerProxy("http://localhost:8000") 
+a = int(input("Enter first number: ")) 
+b = int(input("Enter second number: ")) 
+print(f"Addition = {s.add(a, b)}") 
 
-R(:,:,1) = I(:,:,1);
-G(:,:,2) = I(:,:,2);
-B(:,:,3) = I(:,:,3);
+**********
+Prac 7d:To implement a Java RMI application to perform subtraction of two numbers using a remote method. 
 
-subplot(2,2,1);
-imshow(I);
-title('Original Image');
+InterSub.java:
 
-subplot(2,2,2);
-imshow(uint8(R));
-title('Red Component');
+import java.rmi.*; 
+ 
+public interface InterSub extends Remote { 
+    public int sub(int a, int b) throws Exception; 
+} 
 
-subplot(2,2,3);
-imshow(uint8(G));
-title('Green Component');
+ServerSub.java:
 
-subplot(2,2,4);
-imshow(uint8(B));
-title('Blue Component');
+import java.rmi.*; 
+import java.rmi.server.*; 
+ 
+public class ServerSub extends UnicastRemoteObject implements InterSub { 
+    public ServerSub() throws Exception { 
+        super(); 
+    } 
+ 
+    public int sub(int a, int b) throws Exception { 
+        return a - b; 
+    } 
+ 
+    public static void main(String args[]) throws Exception { 
+        ServerSub s = new ServerSub(); 
+        Naming.rebind("Sub", s); 
+        System.out.println("Server started..."); 
+    } 
+} 
+
+ClientSub.java:
+
+import java.io.*; 
+import java.rmi.*; 
+ 
+public class ClientSub { 
+    public static void main(String args[]) throws Exception { 
+        InterSub obj = (InterSub) Naming.lookup("Sub");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.print("Enter first number: ");
+        int a = Integer.parseInt(br.readLine());
+        System.out.print("Enter second number: ");
+        int b = Integer.parseInt(br.readLine());
+        int result = obj.sub(a, b);
+        System.out.println("Subtraction = " + result);
+    } 
+} 
+
+>javac InterDate.java ServerDate.java ClientDate.java
+>rmiregistry
+
+>java ServerDate
+>java ClientDate
+
+**********
+Prac7d: To implement subtraction of two numbers using XML-RPC in Python.
+
+Server.py:
+
+from xmlrpc.server import SimpleXMLRPCServer 
+s = SimpleXMLRPCServer(("localhost", 8000), logRequests=False) 
+s.register_function(lambda a, b: a - b, "sub") 
+print("Server started...") 
+try: 
+    s.serve_forever() 
+except KeyboardInterrupt: 
+    print("\nServer stopping...") 
+
+Client.py:
+
+import xmlrpc.client 
+s = xmlrpc.client.ServerProxy("http://localhost:8000") 
+a = int(input("Enter first number: ")) 
+b = int(input("Enter second number: ")) 
+print(f"Subtraction = {s.sub(a, b)}") 
